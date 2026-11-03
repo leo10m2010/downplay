@@ -63,4 +63,3 @@ async(page)=>{
   return {passed:true,scale:(await tab.evaluate(()=>window.dhdStatus.scale)),buttons:16,multitouch:true,fullscreen:true,raceFields:(await tab.evaluate(()=>window.dhdStatus.field))-start,physicalPhoneTested:false};
  }finally{await context.close();}
 }
-
