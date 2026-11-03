@@ -23,6 +23,12 @@ no necesitas un paquete ZIP para usarlo ni para continuar desarrollándolo.
 
 ## 2. Configuración de Cloudflare
 
+`jugar.cobbleverse.space` se conecta al PC Linux mediante Cloudflare Tunnel.
+El Worker `downhill-web-relay.dowh.workers.dev` permanece separado y ya está
+configurado en `host.json` para las salas. El dominio del juego no tiene que
+apuntar a ese Worker. El manual `docs/INSTALAR_EN_OTRO_EQUIPO.md`, sección 4,
+muestra ambas rutas y explica qué falta activar.
+
 La sesión de Wrangler disponible durante la preparación permitió consultar la
 zona, pero rechazó DNS con HTTP 403. Por ello, DNS/Access no deben considerarse
 activados por haber generado estos archivos.

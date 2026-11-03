@@ -106,6 +106,35 @@ las funciones de memoria compartida del navegador.
 
 ## 4. Publicar en el dominio existente
 
+### Qué se conecta a cada servicio
+
+Son dos conexiones distintas y ya están previstas en `host.json`:
+
+| Uso | Dirección | Destino |
+|---|---|---|
+| Página y recursos del juego | `https://jugar.cobbleverse.space` | Cloudflare Tunnel → PC Linux, `http://localhost:8095` |
+| Salas y estados multijugador | `wss://downhill-web-relay.dowh.workers.dev` | Worker de salas existente |
+
+El subdominio `jugar` se publica como ruta del túnel hacia el PC; no se usa como
+dominio personalizado del Worker de salas. Ese Worker no aloja la página ni los
+recursos del juego. La aplicación ya conoce su dirección mediante el campo
+`relay` de `host.json` y la comunica al navegador con `network-config.json`.
+No hace falta vincularle un dominio adicional para usarlo.
+
+Tener `cobbleverse.space` registrado en Cloudflare no crea la ruta del juego.
+El campo `publicHostname` indica la dirección prevista, pero todavía hay que
+configurar DNS, conectar `cloudflared` en Linux y establecer Access. Seguir a
+continuación el configurador o la alternativa manual de `DEPLOYMENT.md`.
+
+El endpoint del Worker `/v1/health` respondió correctamente el 3/11/2026 con
+protocolo 1 y versión mínima 0.7.2. Esto acredita el servicio de salas, no el
+dominio del juego ni una instalación Linux ya terminada. Algunos clientes HTTP
+sin agente de navegador recibieron 403; comprobar también con navegador antes
+de concluir que el Worker está caído.
+
+La documentación oficial del recorrido dominio → túnel → servicio local está en
+https://developers.cloudflare.com/tunnel/get-started/.
+
 No crear otro servicio de salas. Conservar
 `wss://downhill-web-relay.dowh.workers.dev` en la configuración.
 
