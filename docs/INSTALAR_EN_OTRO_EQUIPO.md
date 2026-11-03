@@ -53,6 +53,22 @@ configuración de claves/credenciales existente. No pedir un token por chat ni
 incluir credenciales en la URL. Si hace falta GitHub CLI, instalar `gh` desde la
 distribución y completar `gh auth login` de forma interactiva con el usuario.
 
+Si al clonar aparecen `Username` y `Password`, es porque el servidor todavía no
+está autenticado para este repositorio privado. No introducir la contraseña
+normal de la cuenta en el prompt de Git. En Debian/Ubuntu:
+
+```sh
+sudo apt-get install gh git-lfs
+gh auth login --hostname github.com --git-protocol https --web
+gh auth setup-git --hostname github.com
+```
+
+Abrir la URL que muestre el comando en el PC o teléfono del usuario e introducir
+el código de autorización mostrado en su terminal. Esto también funciona si el
+servidor no tiene navegador gráfico. Autenticarse con `leo10m2010` y después
+continuar con el clonado. No convertir el repositorio en público para evitar
+esta autenticación. Referencia: https://cli.github.com/manual/gh_auth_login.
+
 ```sh
 GIT_LFS_SKIP_SMUDGE=1 git clone https://github.com/leo10m2010/downplay.git downplay
 cd downplay
