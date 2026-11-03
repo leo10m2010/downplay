@@ -42,6 +42,14 @@ ajeno ni a partidas de otros usuarios.
 - Sesiones: 60 minutos individual y 30 minutos online, con muestras limitadas y
   medición de avance de campos, memoria, cola de audio y registros.
 
+`web_quality_pressure_check.js` ejecuta los menús reales en dos contextos
+aislados. En uno usa los FPS reales; en otro inyecta 12 FPS únicamente como
+entrada al controlador de calidad. Comprueba que la resolución del renderizador
+real baja de x4 a x1 y que la simulación continúa. No es una medición de un equipo
+que realmente funcione a 12 FPS ni demuestra corregido el rendimiento de Brave.
+El controlador reduce también en menús, responde en pocos segundos a una carga
+grave sostenida y solo recupera resolución tras rendimiento estable en carrera.
+
 Varias instancias en un mismo PC sirven para comprobar integración y carga, pero
 no acreditan una partida entre equipos y conexiones diferentes. El rendimiento
 medido con varias instancias simultáneas no representa el rendimiento de un
