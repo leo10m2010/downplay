@@ -1,0 +1,30 @@
+{
+  "name": "downhill-web-relay",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": true,
+  "vars": {
+    "MIN_VERSION": "0.7.2"
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "ROOM",
+        "class_name": "Room"
+      },
+      {
+        "name": "LOBBIES",
+        "class_name": "LobbyIndex"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": [
+        "Room",
+        "LobbyIndex"
+      ]
+    }
+  ]
+}

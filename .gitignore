@@ -1,4 +1,4 @@
-# Material con copyright del juego: NUNCA al repo
+# Original disc images and retired extraction directories stay local.
 *.iso
 *.bin
 *.cue
@@ -24,6 +24,8 @@ SYSTEM.CNF
 *.TEX
 *.PTS
 *.RST
+*.RRS
+*.rrs
 *.BNK
 *.VPK
 *.VAG
@@ -45,9 +47,19 @@ SYSTEM.CNF
 *.lock~
 ghidra_projects/
 # Build y editor
-build/
+/build/*
+!/build/network/
+/build/network/*
+!/build/network/public/
+/build/network/public/*
+!/build/network/public/network-core.js
+!/build/network/public/network-core.wasm
+!/build/network/public/package.json
 build-*/
 dist/
+dist-ui/
+node_modules/
+.vercel/
 .tools/
 .venv/
 .playwright-cli/
@@ -64,6 +76,8 @@ __pycache__/
 graphify-out/
 # Secretos
 .env
+.env.*
+SCUS_*
 *.key
 *.pem
 
@@ -84,3 +98,19 @@ dh-telemetry/
 *.p2s
 *.p2s.dhtel_backup
 dhtel_*
+
+# Only the prepared game and runtime are shared for this private transfer.
+# Other private files, including tunnel credentials, remain excluded.
+/private/*
+!/private/game-data/
+!/private/runtime/
+vendor/
+logs/
+.run/
+.updates/
+relay/node_modules/
+relay/.wrangler/
+relay/build-dryrun/
+cloudflared.token
+credentials.json
+secrets.json

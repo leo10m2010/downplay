@@ -1,0 +1,28 @@
+name: source-checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false # Unit fixtures do not need the game download or LFS quota.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r tools/requirements.txt
+      - run: python tools/check_sources.py --all
+      - run: python -m unittest discover -s tests -p 'test_*.py'
+      - run: node tests/keyboard_bindings_test.mjs
+      - run: node tests/gamepads_test.mjs
+      - run: node tests/quality_test.mjs
+      - run: node tests/load_progress_test.mjs
+      - run: node tests/audio_ring_test.mjs
+      - run: node tests/cache_queue_test.mjs
+      - run: node tests/release_modules_test.mjs
+      - run: node tests/browser_network_test.mjs

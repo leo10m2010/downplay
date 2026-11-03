@@ -1,196 +1,109 @@
-# DownHill-Port-PC
+# Downhill Web — versión privada
 
-## Experimental WebAssembly port
+Versión web basada en Downhill Revived 0.7.2, con interfaz, controles, guardados,
+lectura progresiva y servidor de recursos propios. El juego se ejecuta en el
+navegador del jugador. El PC Linux sirve archivos; el Worker de Cloudflare conecta
+las salas. El código y las evaluaciones antiguas se archivan fuera del proyecto.
 
-This checkout adds a separate SDL3/GLES3 browser target sharing the original C++
-physics. See [web build and local asset instructions](web/README.md),
-[technical audit](docs/web-audit.md) and [verification results](docs/web-verification.md).
-Real ALP2 assets from the user's local ISO now load automatically in the loopback
-development server; initial rendering and riding were tested in Chrome. Full
-course completion and visual fidelity still require validation. Public releases
-contain no original game data.
+## Jugar
 
-🇬🇧 English · 🇪🇸 [Español](README.es.md)
+Este es el proyecto de trabajo, sin paquetes ZIP ni instalaciones duplicadas.
+Los recursos preparados de tu copia USA están en `private/game-data`.
+Desde esta carpeta ejecuta `python tools/run_linux_host.py --config host.json`
+(en Linux, `python3`). Requiere Python 3.11 o posterior. Abre
+`http://127.0.0.1:8095/` en Chrome o Edge actualizado.
+No se abre ni se solicita una ISO durante la partida.
 
-A community-driven effort to bring **Downhill Domination** (Incognito Entertainment, PS2, 2003) to modern PCs, natively on **Linux and Windows**.
+La página comprueba WebGPU, JSPI, memoria compartida y aislamiento antes de cargar
+el núcleo. Los controles originales están dentro del juego. «Teclado y mando»
+permite reasignar teclas; los mandos estándar se conectan por USB/Bluetooth al PC.
 
-This is a project **by the community, for the community**. It is not affiliated with, endorsed by, or connected to the original developers or publishers.
+## Salas y partidas
 
-> **Status: engine reconstruction, playable physics prototype.** All 54 levels load with terrain, props, sky and collision, and a bike can be ridden down ALP2 from start to finish in the viewer. There is **no complete game yet**: the rider, menus, audio, AI and game flow are still missing. See [Progress](#progress) and [Roadmap](#roadmap).
+El anfitrión elige 2, 3 o 4 jugadores. Comparte la invitación o el código de sala.
+El inicio automático espera el número elegido. La lista diferencia preparación,
+carga de pista y carrera. El protocolo permite reintentar en la sala; no permite
+reincorporarse a una carrera ya empezada. Una desconexión se muestra claramente.
 
-## Goal
+En «Diagnóstico técnico y guardados» puedes descargar una copia, restaurarla y
+recuperar la copia anterior. Restaurar detiene las pestañas del juego, valida el
+archivo y reemplaza en una transacción las tarjetas incluidas. Las demás tarjetas
+se conservan. Los guardados pertenecen al navegador y al dominio que estés usando.
 
-A native engine reimplementation (not an emulator wrapper) that loads the game's original data from **your own legally obtained disc image**, and runs on current systems with modern resolutions, input and frame pacing.
+## Linux, dominio y actualizaciones
 
-## Legal notice
+La dirección preparada es **https://jugar.cobbleverse.space**. Deben configurarse
+Cloudflare Tunnel y Access antes de compartirla. No se activan planes de pago.
+Las instrucciones completas están en [DEPLOYMENT.md](DEPLOYMENT.md).
 
-- **This repository contains no game data, no game code and no disassembly or decompilation output.** No ISO, executable, textures, models, audio or video are, or will ever be, included. Docs may cite function addresses as research references; they never contain game code.
-- You must supply **your own copy** of the game. The tools read your image locally and nothing is uploaded anywhere.
-- `.gitignore` and `tools/guard.sh` (also run in CI) keep disc images, extracted assets, the game executable, Ghidra projects, savestates and decompiler output out of version control. **Please keep it that way in pull requests.**
-- Documentation here describes *file formats and structures* discovered through interoperability research. If you are a rights holder and have concerns, please open an issue.
+Se trabaja directamente sobre estos archivos. Las herramientas de empaquetado
+siguen disponibles para un despliegue futuro; no hay paquetes generados en la
+carpeta activa. Para actualizar archivos, detén primero el lanzador.
 
-## Progress
+## Estructura activa
 
-<!-- progress:start -->
-**Downhill Domination: 42.9% verified, 55.8% implemented**
+- `web-native`: interfaz y adaptadores del navegador.
+- `tools`, `tests`, `docs`, `licenses`: preparación, despliegue, pruebas y procedencia.
+- `private/game-data`: recursos preparados; `private/runtime`: núcleo de evaluación.
+- `vendor/revived`: fuentes de referencia fijadas; `build/network`: cliente de red compilado.
+- `relay`: proyecto del Worker de salas.
 
-Average of all rows. Verified = checked against evidence from the game (savestates, the game's own camera, bit-identical reference). Implemented = works but unverified or based on hypotheses. Counted rows show real units; the rest are rough maintainer estimates.
+Para trasladar esta copia personal mediante un repositorio privado, Git incluye
+`private/game-data`, `private/runtime`, `build/network/public` y la configuración
+`host.json` sin credenciales. Las ISOs, tokens, SDK y dependencias de desarrollo
+siguen excluidos. Los archivos `.data` usan Git LFS y los módulos originales
+conservan sus bytes y hashes al clonarlos en otro sistema.
+Las ISOs originales se conservan fuera de esta carpeta, en
+`../downhill-originales`. El SDK de Emscripten compartido está en
+`~/.cache/downhill-toolchains/emsdk-6.0.12`; se puede seleccionar mediante
+`DHD_EMSDK` o `--sdk`. Los respaldos pequeños de fuentes e investigaciones
+conservadas están fuera del proyecto, en `downhill-archive`.
 
-<img src="docs/progress/legend_en.svg" alt="Verified / Implemented, unverified / Missing">
+## Desarrollo y límites reales
 
-<img src="docs/progress/progress_re_en.svg" alt="Reverse engineering">
+Para preparar recursos se utiliza Python offline con `tools/requirements.txt`.
+La fuente de referencia está fijada a `244cf4cef10da5492ca878e3b97ec74656dbc5e5`.
+`tools/build_browser_network.py` compila el cliente C original con Emscripten.
+La compilación integral del núcleo del juego todavía no está reproducida aquí:
+se usan módulos oficiales con manifiesto y comprobación de hashes. No se deben
+presentar las mejoras de esta interfaz como una reconstrucción completa del motor.
 
-<img src="docs/progress/progress_engine_en.svg" alt="Engine and game">
+La caché usa hasta 48 MiB en memoria y 128 MiB de almacenamiento, además de la
+memoria del propio motor. Los recursos se descargan por demanda; la primera
+carga depende de la conexión de subida del servidor. La resolución se adapta entre
+x1 y x4 sin alterar la velocidad del juego. No se promete una tasa fija de FPS.
 
-<details><summary>Detail</summary>
+Consulta [docs/TESTING.md](docs/TESTING.md) y [docs/RELEASE.md](docs/RELEASE.md) para
+los resultados, condiciones de prueba y comprobaciones pendientes. El código
+conserva GPL-3.0-or-later; esa licencia no concede derechos sobre los recursos
+originales. Esta configuración de traslado personal está destinada a un
+repositorio privado.
 
-| Area | Detail |
-|---|---|
-| Disc and IE containers | Unpacker works; a few nested variants pending. |
-| Texture upload formats | CT32 (swizzled), T8, T4, T8H, plus the PTR material link. |
-| Scene graph and static geometry | Whole graph with per-leaf visibility ranges; strips, UVs, vertex colour, alpha. |
-| Props and instanced objects | Trees, flags, cabin: one copy per instance. Checked against the game's own camera. |
-| Levels with sky panorama | The other 7 have no panorama root; some are enclosed arenas. |
-| Fog and colour grading | Parameters not found; DH_FOG is a guess, off by default. |
-| Levels with decoded collision | C++ loader bit-identical to the Python reference; hit records match savestates (95% same triangle and normal). |
-| Course line, gates, start grid | PTS racing line, 28 gates in ALP2, 10-slot grid; the finish rule is a hypothesis. |
-| Bike model | Parts assembled into a full bike; skeleton attachment data pending. |
-| Animations (NGA) | All present track types decoded; channel-to-bone mapping pending. |
-| Rider body mesh | Found in each level NGP (kinds 4030-4130, 13 models in ALP2); skinning decoded from the VU1 code and posed with BANIM clips; not yet compared with the game. |
-| Rigid-body integrator (functions) | FUN_00238818 and 9 helpers traced from the disassembly. FUN_00238818 is validated for FREE FLIGHT only: the C++ port with the engine constants read from the ELF (FUN_00134060: damping 0.975/0.987, G = -96.6000061; no fit) matches 4 captures x 50 consecutive ticks to ~1 float32 ulp. Contacts and impacts not validated, so counted as wip, not done. |
-| Viewer (dhview) | Free camera, walk mode, camera-centred sky, play mode. |
-| Bike physics | Rigid body on the ported sweep and contact response (verified part); many parameters are labelled hypothesis. |
-| Levels ridden start to finish | ALP2 only (28/28 gates, test autopilot, 0 resets); keyboard riding works. |
-| Native C++ modules | Collision is native; scene graph, textures, models, course data, animations, bike assembly and level loading still go through the Python tools. |
-| Menus and loading screens | 78 loading screens render; no menu logic. |
-| Audio | VAG files located; nothing decoded in the engine. |
-| AI and rivals | Not started. |
-| Game modes and flow | Countdown, timing, results, save data. |
-| Packaging (deb, Windows) | CPack scaffolding only. |
+## Trasladar el proyecto mediante GitHub
 
-</details>
+En este PC ya está inicializado Git LFS. Sube desde Git o GitHub Desktop; el
+cargador de archivos de la web no convierte los recursos a LFS. El archivo más
+grande supera el límite de 100 MiB de Git normal.
 
-Source data: [`docs/progress.json`](docs/progress.json), regenerate with `python3 tools/progress.py`.
-<!-- progress:end -->
-
-Format notes live in [`docs/en/formats.md`](docs/en/formats.md) and [`docs/formats/`](docs/formats/) (collision, scene instancing, bike physics, integrator, animations, markers and more). The Ghidra setup and research workflow are in [`docs/en/research.md`](docs/en/research.md); architecture and the language decision are in [`docs/en/architecture.md`](docs/en/architecture.md); design decisions are logged in [`docs/DECISIONS.md`](docs/DECISIONS.md). Everything is also available in Spanish under [`docs/es/`](docs/es/).
-
-## Roadmap
-
-| # | Milestone | State |
-|---|-----------|-------|
-| 1 | **Faithful map**: textured levels, props, sky, compared against the game's own camera | Done |
-| 2 | **Complete collision**: instance transforms, contact response | Done |
-| 3 | **Playable bike**: physics, keyboard control, ALP2 start to finish | Prototype (parameters partly hypothesis; faithful integrator pending validation) |
-| 4 | **Animated rider**: body mesh and channel-to-bone mapping | In progress: mesh, skeleton, skinning and upper-body pose decoded (offline tools); legs, bike attachment and viewer integration pending |
-| 5 | **Native runtime**: C++ loaders replace the Python step (language decided: C++20) | Pending |
-| 6 | **Game flow**: menus, loading, countdown, finish, times, rivals | Pending |
-| 7 | **Packaging**: `.deb` and Windows builds. The package will **not** ship game data; the app will extract assets from your image on first run | Pending |
-
-## Try it
-
-You need **your own legally obtained disc image** of the PAL release (`SLES_522.02`). Nothing from the game is ever included in this repository or uploaded anywhere.
+En el servidor instala Git LFS y Python 3.11+, y utiliza:
 
 ```sh
-python3 tools/dh.py doctor                                   # checks dependencies and state
-python3 tools/dh.py setup "Downhill Domination.iso"          # extract, unpack, export ALP2 + ALPINEMX, build the viewer
-python3 tools/dh.py play                                     # ride ALP2 (or: play ALPINEMX)
-python3 tools/dh.py setup "Downhill Domination.iso" --all    # optional: all 54 levels (about 4 GB, several minutes)
+git clone https://github.com/leo10m2010/downplay.git downhill
+cd downhill
+git lfs install --local
+git lfs pull
+python3 tools/run_linux_host.py --config host.json
 ```
 
-`setup` needs Python 3 with Pillow and NumPy, 7-Zip (`7z`, `7zz` or `7za`) or `bsdtar`, CMake, a C++20 compiler and the SDL3 and OpenGL development files. It writes only to `iso_extract/`, `unpacked/`, `out/` and `build/`, all ignored by git, and can be re-run safely: finished steps are skipped. Controls: `W` accelerate, `S` brake, `A`/`D` steer, `Q`/`E` lean, `Space` jump, `Enter` respawn at the last good point, `T` back to the start, `Esc` quit.
+No necesitas copiar los recursos por otro medio. Git LFS debe descargar los
+archivos reales; los punteros pequeños de LFS no sirven para ejecutar el juego.
+Los tests de GitHub Actions no descargan el juego para ahorrar esa transferencia.
 
-This is a physics prototype: no rider, menus, audio or opponents yet, and several physics parameters are hypotheses (see [Progress](#progress)). Tested on Linux; Windows should work the same way but has not been tried yet.
+GitHub Free incluye 10 GiB de almacenamiento y 10 GiB de descargas LFS por periodo
+según su [documentación](https://docs.github.com/en/billing/concepts/product-billing/git-lfs).
+Los recursos actuales ocupan unos 2,36 GiB. Para evitar cargos, configura un
+presupuesto LFS de **0 USD** en tu cuenta antes de subirlos. No se modificó tu
+cuenta ni se activó facturación mediante esta configuración local.
 
-## Building
-
-Requirements: a C++20 compiler, CMake ≥ 3.20, Ninja, SDL3 and OpenGL development files.
-
-```sh
-cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
-cmake --build build
-cd build && ctest                    # ground, contact, bike and integrator unit tests
-./build/dhview level.mdl             # WASD + mouse, Shift = fast, F = fly/walk, Esc = quit
-```
-
-Play the prototype on a level you exported (see the workflow below):
-
-```sh
-DH_PLAY=1 DH_BIKE=out/play/bike1.mdl ./build/dhview out/maps/ALP2.mdl
-# W accelerate · S brake · A/D steer · Q/E lean · Space jump · Enter restart at last good point · T back to the start
-```
-
-Useful environment variables: `DH_COLDRAW=1` draws the collision mesh, `DH_NOSKY=1` hides the sky, `DH_FOG="r g b start end"` enables the experimental fog.
-
-Packaging (no game data included): `cd build && cpack -G DEB`.
-
-## Tools
-
-Python 3 with Pillow and NumPy is enough for everything in `tools/`. Python is used only for research and offline conversion; the runtime is C++ (see [`docs/en/architecture.md`](docs/en/architecture.md) for the language discussion, where Rust was considered and dropped).
-
-| Tool | Purpose |
-|------|---------|
-| `tools/dh.py` | One-stop script: `doctor`, `setup` (ISO to playable levels and viewer) and `play` |
-| `tools/unpack_ie.py` | Inflate the `IE` containers from an extracted disc folder |
-| `tools/tex_dump.py`, `tools/tex_export.py` | Inspect and export textures (`gs.py` has the GS swizzle tables) |
-| `tools/vif.py`, `tools/vudis.py` | VIF packet decoder; VU1 microcode disassembler |
-| `tools/scene.py` | Scene-graph walker for `.NGP`; `walk_payloads` / `Owners` give per-visit transforms and the fine-detail filter |
-| `tools/scene_html.py` | Dump a level's scene graph as a collapsible HTML tree (structure only, no game data) |
-| `tools/extract_model.py` | Build a textured `.mdl` (mesh, materials, palettes, vertex colour) plus the sky/horizon `.dome.mdl` from a level |
-| `tools/export_all.sh` | Export every level (model, collision with instances, gates, start grid) to `out/maps/` |
-| `tools/collision.py` | Collision mesh (nodes `0x2A`/`0x0A`) with instance placement; `--instances` is the correct export |
-| `tools/markers.py`, `tools/pts_path.py`, `tools/ptsext.py` | Gates, start grid, `.PTS` racing line and its sibling data |
-| `tools/nga.py` | Animation (`.NGA`) track decoder |
-| `tools/assemble_bike.py` | Assemble a bike from frame, fork and wheel `.mdl` parts |
-| `tools/contact_sheet.py`, `tools/compare_view.py` | Contact sheets of many models; side-by-side render against a PCSX2 savestate screenshot using the game's own camera |
-| `tools/p2s.py`, `tools/p2s_check.py`, `tools/pcsx2/` | PCSX2 savestate reader, comparison against the engine's own data, PINE live-capture scripts |
-| `tools/integrator_check.py` | Compare the rigid-body integrator reimplementation with savestates |
-| `tools/guard.sh` | Fail if game data, large files, personal paths or secrets are versioned (runs in CI) |
-| `tools/ghidra/` | Headless Ghidra scripts (string xrefs, decompilation, instruction listings) |
-
-Reverse engineering uses [Ghidra](https://ghidra-sre.org/) with the community [ghidra-emotionengine-reloaded](https://github.com/chaoticgd/ghidra-emotionengine-reloaded) extension (language `r5900:LE:32:default`) and [PCSX2](https://pcsx2.net/) savestates as ground truth.
-
-Typical workflow:
-
-```sh
-7z x "Downhill Domination.iso" -oiso_extract
-python3 tools/unpack_ie.py iso_extract unpacked
-sh tools/export_all.sh               # all levels into out/maps/
-./build/dhview out/maps/ALP2.mdl
-```
-
-## Contributing
-
-See [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`SECURITY.md`](SECURITY.md) first.
-
-Contributions are very welcome, especially:
-
-- Reverse engineering: the rider body mesh, `.NGA` channel-to-bone mapping, fog parameters, formats (`.RST`, `.REP`, `.BNK`, `.SKX`, ...), game logic.
-- Validating the rigid-body integrator: pairs of savestates a few frames apart with the bike in the air (see [`docs/formats/integrator.md`](docs/formats/integrator.md)).
-- Rendering and engine work in C++.
-- Testing on different PAL/NTSC releases of the game (so far only the PAL `SLES_522.02` build has been examined).
-- Documentation of anything you figure out.
-
-Ground rules:
-
-1. Never commit game data, executables, extracted assets, savestates or decompiler output.
-2. Document findings in both `docs/en/` and `docs/es/` (or `docs/formats/`) in your own words (structures and field meanings, not copied code). Cite the function address, or label it as a hypothesis.
-3. Keep tools small and runnable; a short check beats a long explanation.
-
-## Acknowledgements
-
-Thanks to the PCSX2 and Ghidra communities, and to everyone who has documented the PS2 hardware (GS, VIF, VU) over the years.
-
-Part of the disassembly analysis was supported by code-reading assistive tools; every claim is marked as a hypothesis until validated by a script against the game.
-
-## Authors
-
-Created and maintained by **Pedro Soto**, with contributions from the community (see [`AUTHORS`](AUTHORS)).
-
-## License
-
-Copyright (C) 2026 Pedro Soto and the DownHill-Port-PC contributors.
-
-The code in this repository is licensed under the **GNU General Public License v3.0 or later** (see [`LICENSE`](LICENSE)). Contributions are accepted under the same license.
-
-This license covers only the code and documentation in this repository. Game assets, code and trademarks belong to their respective owners and are not included.
+El manual de continuidad para instalarlo en el otro equipo está en
+[docs/INSTALAR_EN_OTRO_EQUIPO.md](docs/INSTALAR_EN_OTRO_EQUIPO.md).

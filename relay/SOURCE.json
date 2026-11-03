@@ -1,0 +1,7 @@
+{
+  "upstream": "https://github.com/skuza-oss/downhill-revived",
+  "revision": "244cf4cef10da5492ca878e3b97ec74656dbc5e5",
+  "license": "GPL-3.0-or-later",
+  "changes": "workers.dev deployment; official domain and analytics binding removed; optional analytics type declaration; pinned deploy-only tool dependencies. Runtime server TypeScript unchanged.",
+  "gameDataIncluded": false
+}

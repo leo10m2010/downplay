@@ -1,0 +1,6 @@
+# Prepared game files use LFS; preserve their original bytes on every platform.
+private/game-data/**/*.data filter=lfs diff=lfs merge=lfs -text
+private/game-data/index.json -text
+# Runtime hashes refer to exact downloaded bytes, including JavaScript files.
+private/runtime/** -text
+build/network/public/** -text

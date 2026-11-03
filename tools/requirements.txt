@@ -1,0 +1,2 @@
+# Offline ISO inspection/extraction only. Serving prepared resources uses Python stdlib.
+pycdlib==1.22.0

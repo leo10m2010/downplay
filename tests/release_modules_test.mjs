@@ -1,0 +1,40 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+import assert from 'node:assert/strict';
+import {backupDocument,validateBackup} from '../web-native/save-store.js';
+import {checkCompatibility} from '../web-native/compatibility.js';
+import {createFrameMetrics} from '../web-native/frame-metrics.js';
+import {createPcmConsumer} from '../web-native/audio-consumer.js';
+const rows=[['/saves/card1/bascus-97177dhd',{name:'BASCUS-97177DHD',dir:true,time:123}],['/saves/card1/bascus-97177dhd/data',{name:'DATA',time:123,data:Uint8Array.from([0,1,127,255])}]];
+const doc=await backupDocument(rows),checked=await validateBackup(JSON.stringify(doc));
+assert.equal(doc.version,2);assert.equal(checked.fileCount,1);assert.equal(checked.bytes,4);
+assert.equal(checked.nodes.find(([path])=>path.endsWith('97177dhd'))[1].name,'BASCUS-97177DHD');
+assert.deepEqual([...checked.nodes.find(([path])=>path.endsWith('/data'))[1].data],[0,1,127,255]);
+const withEmptyCard=await backupDocument([...rows,['/saves',{name:'saves',dir:true,time:7}],['/saves/card2',{name:'card2',dir:true,time:8}],['/saves/card2/empty',{name:'EMPTY',dir:true,time:9}]]);
+const emptyChecked=await validateBackup(JSON.stringify(withEmptyCard));
+assert.deepEqual(new Set(emptyChecked.cards),new Set(['/saves/card1','/saves/card2']));
+assert.equal(emptyChecked.nodes.find(([path])=>path==='/saves/card2/empty')[1].name,'EMPTY');
+assert.equal(emptyChecked.nodes.find(([path])=>path==='/saves/card2/empty')[1].time,9);
+const large=new Uint8Array(8*1048576);large.fill(165);large[0]=0;large[large.length-1]=255;
+const largeDoc=await backupDocument([['/saves/card1/game/data',{name:'DATA',time:123,data:large}]]);
+const largeChecked=await validateBackup(JSON.stringify(largeDoc)),largeBytes=largeChecked.nodes.find(([path])=>path.endsWith('/data'))[1].data;
+assert.equal(largeChecked.bytes,large.length);assert.deepEqual(largeBytes,large);
+const legacy=structuredClone(doc);legacy.version=1;delete legacy.directories;delete legacy.files[0].sha256;
+assert.equal((await validateBackup(JSON.stringify(legacy))).legacy,true);
+for(const mutate of [d=>d.files[0].data='AAAAAA==',d=>d.files.push({...d.files[0]}),d=>d.files[0].path='/saves/card1/../bad',d=>d.files[0].path='/settings/data',d=>d.files[0].data='AAAA=',d=>d.version=99]){
+ const bad=structuredClone(doc);mutate(bad);await assert.rejects(()=>validateBackup(JSON.stringify(bad)));
+}
+await assert.rejects(()=>validateBackup('{invalid'));
+const scope={isSecureContext:true,crossOriginIsolated:true,SharedArrayBuffer,WebAssembly:{...WebAssembly,Suspending:class{},promising(){},Memory:WebAssembly.Memory},Worker:class{},OffscreenCanvas:class{},HTMLCanvasElement:{prototype:{transferControlToOffscreen(){}}},navigator:{gpu:{async requestAdapter(){return {}; }},locks:{}},indexedDB:{},AudioContext:class{},AudioWorkletNode:class{}};
+assert.equal((await checkCompatibility(scope)).ok,true);
+assert.equal((await checkCompatibility({...scope,crossOriginIsolated:false})).ok,false);
+assert.equal((await checkCompatibility({...scope,navigator:{...scope.navigator,gpu:{async requestAdapter(){return null;}}}})).ok,false);
+assert.equal((await checkCompatibility({...scope,WebAssembly:{}})).ok,false);
+const metrics=createFrameMetrics(3);for(const time of [0,16,32,112,128])metrics.sample(time);
+assert.deepEqual(metrics.snapshot(),{samples:3,p50Ms:16,p95Ms:16,maxMs:80,stalls:1});
+const ring=new SharedArrayBuffer(8+4800*4),head=new Int32Array(ring,0,2),data=new Int16Array(ring,8);data.fill(16384);
+const reader=createPcmConsumer(ring),left=new Float32Array(128),right=new Float32Array(128);
+reader.read(left,right);assert(left.every(x=>x===0));assert.equal(reader.stats().underruns,0);
+head[0]=2000;reader.read(left,right);assert(left[127]===.5&&left[0]>0&&left[0]<.5);assert.equal(head[1],128);
+for(let i=0;i<17;i++)reader.read(left,right);assert.equal(reader.stats().underruns,1);assert.equal(left[127],0);
+assert(reader.stats().starvedFrames>0);
+console.log('Save integrity/legacy/path safety, browser preflight, bounded frame metrics and PCM prefill/underrun recovery passed.');

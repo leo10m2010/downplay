@@ -1,0 +1,759 @@
+{
+  "host_fp_csr": {
+    "result": "u32",
+    "params": []
+  },
+  "host_fp_set_csr": {
+    "result": "void",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_vu1_file": {
+    "result": "void",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_cycles": {
+    "result": "u64",
+    "params": []
+  },
+  "host_wall_seconds": {
+    "result": "f64",
+    "params": []
+  },
+  "host_ram_create": {
+    "result": "u32",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_ram_view": {
+    "result": "u32",
+    "params": [
+      "u32",
+      "u32",
+      "u32",
+      "u32"
+    ]
+  },
+  "host_last_error": {
+    "result": "u32",
+    "params": []
+  },
+  "host_mem_commit": {
+    "result": "u32",
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_console_write": {
+    "result": "void",
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_fiber_delete": {
+    "result": "void",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_fiber_current": {
+    "result": "u32",
+    "params": []
+  },
+  "host_callback_fiber": {
+    "result": "u32",
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_frame_registers": {
+    "result": "void",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_callbacks_drain": {
+    "result": "void",
+    "params": []
+  },
+  "host_service_host_poll_dump": {
+    "result": "u32",
+    "params": []
+  },
+  "host_fiber_switch": {
+    "result": "void",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_getenv": {
+    "result": "u32",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_wait_wall": {
+    "result": "void",
+    "params": [
+      "f64"
+    ]
+  },
+  "host_pacing_handoff": {
+    "result": "void",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_pacing_config": {
+    "result": "void",
+    "params": [
+      "f64",
+      "u64"
+    ]
+  },
+  "host_frame_context": {
+    "result": "void",
+    "params": [
+      "u64",
+      "f64"
+    ]
+  },
+  "host_service_graphics_vblank": {
+    "result": "void",
+    "params": []
+  },
+  "host_service_graphics_wait": {
+    "result": "void",
+    "params": []
+  },
+  "host_service_gs_vblank": {
+    "result": "void",
+    "params": []
+  },
+  "host_service_gs_priv_read": {
+    "result": "u64",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_pacing_input": {
+    "result": "void",
+    "params": []
+  },
+  "host_frame_video": {
+    "result": "void",
+    "params": [
+      "f64",
+      "u32"
+    ]
+  },
+  "host_capture_name": {
+    "result": "void",
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_service_gs_vsync": {
+    "result": "void",
+    "params": []
+  },
+  "host_pacing_wait": {
+    "result": "void",
+    "params": []
+  },
+  "host_service_host_backtrace": {
+    "result": "void",
+    "params": []
+  },
+  "host_service_host_init": {
+    "result": "void",
+    "params": []
+  },
+  "host_service_gs_reset": {
+    "result": "void",
+    "params": []
+  },
+  "host_service_graphics_threaded": {
+    "result": "u32",
+    "params": []
+  },
+  "host_fiber_main": {
+    "result": "u32",
+    "params": []
+  },
+  "host_fp_mode": {
+    "result": "void",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_sleep_ms": {
+    "result": "void",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_service_launcher_open": {
+    "result": "u32",
+    "params": []
+  },
+  "host_service_host_console_init": {
+    "result": "void",
+    "params": []
+  },
+  "host_service_host_settings_load": {
+    "result": "void",
+    "params": []
+  },
+  "host_service_host_disc_ready": {
+    "result": "u32",
+    "params": []
+  },
+  "host_file_open": {
+    "result": "u32",
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_file_seek": {
+    "result": "u32",
+    "params": [
+      "u32",
+      "u64"
+    ]
+  },
+  "host_file_read": {
+    "result": "u64",
+    "params": [
+      "u32",
+      "u32",
+      "u32"
+    ]
+  },
+  "host_service_movie_prepare": {
+    "result": "void",
+    "params": []
+  },
+  "host_service_movie_start": {
+    "result": "void",
+    "params": [
+      "u32",
+      "u32",
+      "u32",
+      "u32",
+      "u32"
+    ]
+  },
+  "host_service_movie_update": {
+    "result": "u32",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_file_close": {
+    "result": "void",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_error_box": {
+    "result": "void",
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_path_is_dir": {
+    "result": "u32",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_dir_create": {
+    "result": "u32",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_path_exists": {
+    "result": "u32",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_file_write": {
+    "result": "u32",
+    "params": [
+      "u32",
+      "u32",
+      "u32"
+    ]
+  },
+  "host_file_flush": {
+    "result": "u32",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_dir_open": {
+    "result": "u32",
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_dir_next": {
+    "result": "u32",
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_dir_close": {
+    "result": "void",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_exe_path": {
+    "result": "u32",
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_service_graphics_feed": {
+    "result": "void",
+    "params": [
+      "u32",
+      "u32",
+      "u32"
+    ]
+  },
+  "host_service_gs_priv_write": {
+    "result": "void",
+    "params": [
+      "u32",
+      "u64"
+    ]
+  },
+  "host_service_gs_reads_pending": {
+    "result": "u32",
+    "params": []
+  },
+  "host_service_gs_settle_reads": {
+    "result": "void",
+    "params": []
+  },
+  "host_mem_protect": {
+    "result": "u32",
+    "params": [
+      "u32",
+      "u32",
+      "u32"
+    ]
+  },
+  "host_service_vif_feed": {
+    "result": "void",
+    "params": [
+      "u32",
+      "u32",
+      "u32"
+    ]
+  },
+  "host_service_gs_register": {
+    "result": "u64",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_service_gs_bits_per_pixel": {
+    "result": "u32",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_callback_fault_guard": {
+    "result": "u32",
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_fault_guard_here": {
+    "result": "u32",
+    "params": []
+  },
+  "host_service_gs_defer_read_image": {
+    "result": "u32",
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_service_gs_read_image": {
+    "result": "u32",
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_service_host_pad_vibrate": {
+    "result": "void",
+    "params": [
+      "u32",
+      "u32",
+      "u32"
+    ]
+  },
+  "host_service_host_pad_device": {
+    "result": "void",
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_service_mouse_state": {
+    "result": "void",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_service_host_setting_locked": {
+    "result": "u32",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_service_texpack_available": {
+    "result": "u32",
+    "params": []
+  },
+  "host_service_host_setting_save": {
+    "result": "u32",
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_putenv_s": {
+    "result": "void",
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_service_gs_window_apply": {
+    "result": "void",
+    "params": []
+  },
+  "host_service_gs_present_options_apply": {
+    "result": "void",
+    "params": []
+  },
+  "host_dpi_aware": {
+    "result": "void",
+    "params": []
+  },
+  "host_monitor_aspect": {
+    "result": "f64",
+    "params": []
+  },
+  "host_service_gs_window_close": {
+    "result": "void",
+    "params": []
+  },
+  "host_service_net_get_lobby": {
+    "result": "void",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_service_net_racing": {
+    "result": "u32",
+    "params": []
+  },
+  "host_service_net_send_frame": {
+    "result": "u32",
+    "params": [
+      "u32",
+      "u32",
+      "u32"
+    ]
+  },
+  "host_service_gs_native_view": {
+    "result": "void",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_service_net_hash_ranges": {
+    "result": "u64",
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_stack_ranges_copy": {
+    "result": "u32",
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_service_net_init": {
+    "result": "void",
+    "params": [
+      "u32",
+      "u32",
+      "u32",
+      "u32"
+    ]
+  },
+  "host_service_net_create_room": {
+    "result": "u32",
+    "params": []
+  },
+  "host_service_net_join_room": {
+    "result": "u32",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_service_net_set_room": {
+    "result": "void",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_service_net_pick": {
+    "result": "void",
+    "params": [
+      "u32",
+      "u32",
+      "u32"
+    ]
+  },
+  "host_service_net_set_ready": {
+    "result": "void",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_service_net_seconds": {
+    "result": "f64",
+    "params": []
+  },
+  "host_putenv": {
+    "result": "void",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_service_net_start_race": {
+    "result": "void",
+    "params": []
+  },
+  "host_service_gs_pump_messages": {
+    "result": "void",
+    "params": []
+  },
+  "host_service_net_server_ms": {
+    "result": "f64",
+    "params": []
+  },
+  "host_service_net_leave": {
+    "result": "void",
+    "params": []
+  },
+  "host_service_gs_window_title": {
+    "result": "void",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_service_net_receive_frame": {
+    "result": "u32",
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_service_disc_check_start": {
+    "result": "u32",
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_service_text_input_end": {
+    "result": "void",
+    "params": []
+  },
+  "host_service_disc_check_poll": {
+    "result": "u32",
+    "params": [
+      "u32",
+      "u32",
+      "u32"
+    ]
+  },
+  "host_service_net_list_lobbies_poll": {
+    "result": "u32",
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_service_text_input_edit": {
+    "result": "u32",
+    "params": [
+      "u32",
+      "u32",
+      "u32"
+    ]
+  },
+  "host_service_text_input_begin": {
+    "result": "void",
+    "params": []
+  },
+  "host_service_net_list_lobbies_start": {
+    "result": "u32",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_service_update_request": {
+    "result": "void",
+    "params": []
+  },
+  "host_service_clipboard_set": {
+    "result": "u32",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_callback_heartbeat": {
+    "result": "void",
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_heartbeat_eip": {
+    "result": "u32",
+    "params": []
+  },
+  "host_service_gs_capture_request": {
+    "result": "void",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_exit": {
+    "result": "void",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_service_gs_trace_begin": {
+    "result": "void",
+    "params": []
+  },
+  "host_service_gs_snapshot": {
+    "result": "void",
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_service_gs_trace_size": {
+    "result": "u32",
+    "params": []
+  },
+  "host_service_gs_trace_pop": {
+    "result": "void",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_callback_memory_regions": {
+    "result": "void",
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_vu1_snapshot": {
+    "result": "u32",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_sound_tick": {
+    "result": "void",
+    "params": []
+  },
+  "host_sound_open": {
+    "result": "void",
+    "params": []
+  },
+  "host_sound_write": {
+    "result": "void",
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_service_movie_playing": {
+    "result": "u32",
+    "params": []
+  },
+  "host_service_movie_audio": {
+    "result": "void",
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_sound_log_stack": {
+    "result": "void",
+    "params": []
+  },
+  "host_service_host_game_options_read": {
+    "result": "u32",
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_service_host_skip_movies": {
+    "result": "u32",
+    "params": []
+  },
+  "host_display_hz": {
+    "result": "u32",
+    "params": []
+  },
+  "host_service_presence": {
+    "result": "void",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_file_size": {
+    "result": "u64",
+    "params": [
+      "u32"
+    ]
+  }
+}
