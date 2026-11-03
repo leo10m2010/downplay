@@ -12,6 +12,7 @@ preparado utiliza únicamente la biblioteca estándar de Python.
 ```sh
 python3 -m unittest discover -s tests -p 'test_*.py'
 node tests/keyboard_bindings_test.mjs
+node tests/mobile_input_test.mjs
 node tests/gamepads_test.mjs
 node tests/audio_ring_test.mjs
 node tests/quality_test.mjs
@@ -49,6 +50,14 @@ real baja de x4 a x1 y que la simulación continúa. No es una medición de un e
 que realmente funcione a 12 FPS ni demuestra corregido el rendimiento de Brave.
 El controlador reduce también en menús, responde en pocos segundos a una carga
 grave sostenida y solo recupera resolución tras rendimiento estable en carrera.
+
+`web_mobile_check.js` usa el servidor candidato en 8096 y Chrome con pantalla
+390×844 / 844×390 y entrada táctil mediante CDP. Ejecuta el núcleo real, verifica
+los 16 botones, tres dedos simultáneos, cancelación, mezcla con teclado, dirección
+al deslizar, pantalla completa y entrada a carrera. No mide una GPU móvil ni
+acredita compatibilidad con Android/Brave físicos. Para repetirlo, inicia
+`python3 tools/run_linux_host.py --config host.json --port 8096` y ejecútalo con
+Playwright CLI mediante `run-code --filename tests/web_mobile_check.js`.
 
 Varias instancias en un mismo PC sirven para comprobar integración y carga, pero
 no acreditan una partida entre equipos y conexiones diferentes. El rendimiento

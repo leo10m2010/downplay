@@ -18,6 +18,31 @@ La página comprueba WebGPU, JSPI, memoria compartida y aislamiento antes de car
 el núcleo. Los controles originales están dentro del juego. «Teclado y mando»
 permite reasignar teclas; los mandos estándar se conectan por USB/Bluetooth al PC.
 
+### Teléfonos (compatibilidad experimental)
+
+En Android, abre la dirección **HTTPS** en Chrome o Brave actualizado. El juego
+comprueba las funciones reales del navegador (WebGPU, JSPI, memoria compartida),
+sin habilitarlo solo por el nombre del navegador. Si falta alguna, indica la
+causa antes de descargar el núcleo. No todos los teléfonos son compatibles.
+
+Los botones táctiles aparecen automáticamente; permiten combinar dirección,
+pedaleo, salto y los demás botones del mando original. «Pantalla completa» incluye
+los controles; gira el teléfono para jugar en horizontal. «Salir» permite volver
+a las salas y «Controles táctiles» oculta o muestra el mando. También puedes usar
+un mando estándar conectado al teléfono por Bluetooth/USB.
+
+En dispositivos táctiles la resolución inicial es x1 y el ajuste automático
+puede subir hasta x2. La simulación conserva su velocidad original. El núcleo
+puede consumir alrededor de 2 GB de memoria, además del navegador: la adaptación
+no garantiza fluidez ni compatibilidad con teléfonos de poca memoria.
+La interfaz y las entradas se comprobaron en Chrome con pantalla y toques móviles
+emulados; quedan pendientes las pruebas en teléfonos Android físicos y Brave
+Android. En iPhone también se requieren todas las funciones comprobadas al entrar;
+no se garantiza compatibilidad por instalar Chrome o Brave.
+
+Referencias del navegador: [WebGPU](https://developer.chrome.com/docs/web-platform/webgpu/troubleshooting-tips)
+y [WebAssembly JSPI](https://v8.dev/blog/jspi).
+
 ## Salas y partidas
 
 El anfitrión elige 2, 3 o 4 jugadores. Comparte la invitación o el código de sala.

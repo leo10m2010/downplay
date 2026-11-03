@@ -12,7 +12,9 @@ sin volver a empaquetar el proyecto ni sustituir el motor.
 - Para ejecutar en Linux se necesita Python 3.11+, Git y Git LFS. No hacen falta
   Node, Emscripten, una GPU en el servidor, emuladores ni un servicio de vídeo.
 - El motor se ejecuta en el navegador del jugador. El servidor sirve archivos.
-  El cliente requiere Chrome/Edge de escritorio con WebGPU, JSPI y aislamiento.
+  El cliente requiere WebGPU, JSPI y aislamiento. Chrome/Brave Android tienen
+  adaptación táctil experimental (x1 inicial, automático hasta x2); la verificación
+  con pantalla/toques móviles en Chrome de escritorio no prueba hardware Android.
 - Arranque: `python3 tools/run_linux_host.py --config host.json`.
 - Dominio previsto: `jugar.cobbleverse.space`. Worker existente:
   `wss://downhill-web-relay.dowh.workers.dev`. No desplegar otro Worker por defecto.

@@ -8,6 +8,7 @@ assert.deepEqual(run(createAutoQuality(),40,true,4,25000),[[6000,3],[21000,2]]);
 assert.deepEqual(run(createAutoQuality(),12,true,4,12000),[[4000,2],[9000,1]]);
 assert.deepEqual(run(createAutoQuality(),12,false,4,12000),[[4000,2],[9000,1]]);
 assert.deepEqual(run(createAutoQuality(),60,true,2,24000),[[21000,3]]);
+assert.deepEqual(run(createAutoQuality({maximum:2}),60,true,1,60000),[[21000,2]]);
 assert.deepEqual(run(createAutoQuality(),60,false,1,40000),[]);
 const floor=createAutoQuality();for(let now=1000;now<40000;now+=1000)assert.equal(floor.sample({fps:10,riding:true,scale:1},now),null);
 const pause=createAutoQuality();pause.sample({fps:12,riding:true,scale:4},1000);pause.sample({fps:12,riding:true,scale:4},2000);

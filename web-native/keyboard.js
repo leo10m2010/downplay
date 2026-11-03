@@ -23,11 +23,12 @@ export function rebind(bindings,id,code){
  result[id]=[code];if(!validateBindings(result))throw Error('La combinación produce teclas duplicadas.');return result;
 }
 const label=code=>({Space:'Espacio',ArrowUp:'↑',ArrowDown:'↓',ArrowLeft:'←',ArrowRight:'→',Escape:'Esc',Backspace:'Retroceso',ShiftLeft:'Mayús izq.',ShiftRight:'Mayús der.'}[code]||code.replace(/^Key|^Digit|^Numpad/,''));
-export function installKeyboard(keys,canvas){
+export function installKeyboard(keys,canvas,input=null){
  const storage='downhill.keyboard.v1';let bindings=defaults(),editing=null;const pressed=new Map();
  const panel=document.getElementById('controls'),grid=document.getElementById('keyboard-bindings'),message=document.getElementById('keyboard-message');
  try{const stored=JSON.parse(localStorage.getItem(storage));if(validateBindings(stored))bindings=stored;}catch{}
- const clear=()=>{for(const vk of pressed.values())Atomics.store(keys,vk,0);pressed.clear();};
+ const set=input?input.set:(key,down)=>Atomics.store(keys,key,down?1:0);
+ const clear=()=>{for(const vk of pressed.values())set(vk,false);pressed.clear();};
  const save=()=>{try{localStorage.setItem(storage,JSON.stringify(bindings));message.textContent='Guardado en este navegador.';}catch{message.textContent='Aplicado. El navegador no permite guardar los cambios.';}};
  const draw=()=>{grid.replaceChildren();for(const [id,text] of ACTIONS){const row=document.createElement('div');row.className='key-row';const title=document.createElement('span');title.textContent=text;const button=document.createElement('button');button.type='button';button.textContent=editing===id?'Pulsa una tecla…':bindings[id].map(label).join(' / ');button.setAttribute('aria-label','Cambiar '+text);button.setAttribute('aria-pressed',String(editing===id));button.onclick=()=>{clear();editing=id;message.textContent='Pulsa la nueva tecla. Esc cancela.';draw();grid.querySelector(`[aria-label="Cambiar ${text}"]`)?.focus();};row.append(title,button);grid.append(row);}};
  draw();
@@ -36,9 +37,9 @@ export function installKeyboard(keys,canvas){
   if(editing){e.preventDefault();e.stopImmediatePropagation();if(e.code==='Escape'){editing=null;message.textContent='Cambio cancelado.';draw();return;}if(e.repeat||e.ctrlKey||e.altKey||e.metaKey)return;try{bindings=rebind(bindings,editing,e.code);editing=null;save();draw();}catch(error){message.textContent=error.message;}return;}
   if(!panel.hidden||document.activeElement!==canvas||e.ctrlKey||e.altKey||e.metaKey)return;
   const action=ACTIONS.find(([id])=>bindings[id].includes(e.code));if(!action)return;
-  e.preventDefault();if(!pressed.has(e.code)){pressed.set(e.code,action[2]);Atomics.store(keys,action[2],1);}
+  e.preventDefault();if(!pressed.has(e.code)){pressed.set(e.code,action[2]);set(action[2],true);}
  },true);
- addEventListener('keyup',e=>{if(!pressed.has(e.code))return;const vk=pressed.get(e.code);pressed.delete(e.code);if(![...pressed.values()].includes(vk))Atomics.store(keys,vk,0);e.preventDefault();},true);
+ addEventListener('keyup',e=>{if(!pressed.has(e.code))return;const vk=pressed.get(e.code);pressed.delete(e.code);if(![...pressed.values()].includes(vk))set(vk,false);e.preventDefault();},true);
  addEventListener('blur',clear);document.addEventListener('visibilitychange',()=>{if(document.hidden)clear();});
  document.addEventListener('pointerdown',e=>{if(e.target!==canvas)clear();},true);
  new MutationObserver(()=>{if(panel.hidden){editing=null;draw();}else clear();}).observe(panel,{attributes:true,attributeFilter:['hidden']});

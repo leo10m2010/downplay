@@ -29,6 +29,7 @@ TYPES={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8'
        '.json':'application/json','.wasm':'application/wasm','.css':'text/css; charset=utf-8'}
 ADAPTERS={name:ROOT/'web-native'/name for name in ('index.html','shell.css','ui.js','keyboard.js','gamepads.js','network.js','network-launcher.js','quality.js','lifecycle.js','saves.js','load-progress.js','audio-ring.js')}
 ADAPTERS['LICENSE']=ROOT/'LICENSE'
+ADAPTERS.update({name:ROOT/'web-native'/name for name in ('mobile.js','input-state.js')})
 ADAPTERS['network-policy.js']=ROOT/'web-native/network-policy.js'
 ADAPTERS.update({name:ROOT/'web-native'/name for name in ('bootstrap.js','compatibility.js','runtime-session.js','save-store.js','save-ui.js','resource-cache.js','audio.js','audio-consumer.js','frame-metrics.js')})
 ADAPTERS.update({name:NETWORK/name for name in ('network-core.js','network-core.wasm')})
@@ -42,14 +43,16 @@ def adapt_main(source):
     source=source.replace('\r\n','\n')
     source=source.replace("import { startSettings } from './settings.js';", "import { startSettings } from './settings.js';\nimport { createGamepadInput } from './gamepads.js';")
     source="import {installNetworkLauncher} from './network-launcher.js';\ninstallNetworkLauncher().catch(console.error);\n"+source
-    source="import {installKeyboard} from './keyboard.js';\n"+source
+    source="import {installKeyboard} from './keyboard.js';\nimport {createKeyInput} from './input-state.js';\nimport {installTouch,installFullscreen,mobileDefaults} from './mobile.js';\n"+source
     source="import {installLifecycle} from './lifecycle.js';\n"+source
     source=source.replace("const addLog = text => { log.textContent += text + '\\n'; log.scrollTop = log.scrollHeight; };", "const addLog = text => { log.textContent=(log.textContent+text+'\\n').slice(-65536);log.scrollTop=log.scrollHeight; };")
     source=source.replace("const worker = new Worker('worker.js', { type: 'module' });", "const worker = new Worker('worker.js', { type: 'module' });\n  window.gameWorker=worker;")
     source=source.replace("window.dhdStatus = m; (window.dhdHistory ??= []).push([m.field, +m.fps.toFixed(2), m.draws]);", "window.dhdStatus=m;(window.dhdHistory??=[]).push([m.field,+m.fps.toFixed(2),m.draws]);if(window.dhdHistory.length>120)window.dhdHistory.shift();")
     start=source.index('// KeyboardEvent.code');end=source.index('// Standard-mapping gamepads',start)
     source=source[:start]+'''let running=false;
-installKeyboard(keys,canvas);
+const keyInput=createKeyInput(keys);
+installKeyboard(keys,canvas,keyInput.source());
+installTouch(keyInput,canvas);
 window.nativeKeyboardDiagnostics=()=>Array.from(keys);
 '''+source[end:]
     source=source.replace("if (m.type === 'log') addLog(m.text);", "if (m.type === 'network-status') {window.nativeNetworkDiagnostics=m;const label=document.getElementById('network-room');if(label&&m.code)label.textContent='Sala '+m.code+(m.connected?' · conectada':' · desconectada');}\n    else if (m.type === 'log') addLog(m.text);")
@@ -63,8 +66,10 @@ window.nativeGamepadDiagnostics=()=>Array.from(pads);
 function pollPads(){pollGamepads(navigator.getGamepads?.(),document.hasFocus()&&!document.hidden&&document.getElementById('controls').hidden&&document.getElementById('logPanel').hidden&&!['INPUT','TEXTAREA'].includes(document.activeElement?.tagName));cursor();requestAnimationFrame(pollPads);}
 addEventListener('blur',()=>pollGamepads(navigator.getGamepads?.(),false));
 '''+source[end:]
+    start=source.index('const fullscreen =');end=source.index('// The Controls and Log buttons',start)
+    source=source[:start]+"installFullscreen(canvas,addLog);\n\n"+source[end:]
+    source=source.replace("env: { DHD_SETTINGS: 'none', ...env }", "env: mobileDefaults({DHD_SETTINGS:'dhd.ini',...env})")
     source=source.replace("if (params.get('iso') === 'test') start({ isoUrl: '/test-iso'", "if (true) start({ isoUrl: '/game-data'")
-    source=source.replace("env: { DHD_SETTINGS: 'none', ...env }", "env: { DHD_SETTINGS: 'dhd.ini', ...env }")
     source=source.replace('context.resume();',"installLifecycle(context,audio,keys,canvas);")
     source=source.replace("  const worker = new Worker('worker.js'", "  if(window.nativeSessionStopped)return;\n  const worker = new Worker('worker.js'")
     source=source.replace("new AudioWorkletNode(context,", "const audioNode=new AudioWorkletNode(context,")
@@ -83,7 +88,7 @@ def adapt_worker(source):
     source=source[:start]+'''    host_sound_write:(a,frames)=>{soundFrames+=frames;writePcm(ring,span(a,frames*4));},
 '''+source[end:]
     source=source.replace("const fetchBytes = async url => { const r = await fetch(url); if (!r.ok) throw Error(`${url}: ${r.status}`); return r.arrayBuffer(); };", "const fetchBytes=url=>fetchWithProgress(url,progress=>post('load-progress',progress));")
-    source=source.replace("  const settings = await createSettings(env, say);", "  const settings = await createSettings(env, say);\n  const autoQuality=createAutoQuality();let firstFrameMs=0;")
+    source=source.replace("  const settings = await createSettings(env, say);", "  const settings = await createSettings(env, say);\n  const autoQuality=createAutoQuality({maximum:env.DHD_AUTO_MAX_SCALE==='2'?2:4});let firstFrameMs=0;")
     # Pin the ordinary in-game online menus to this server as well. An explicit
     # URL environment override still wins; saved upstream defaults must not.
     source=source.replace("  const env = { DHD_ISO:", "  const networkResponse=await fetch('network-config.json',{cache:'no-store'});if(!networkResponse.ok)throw Error('No se pudo leer la configuración de salas.');const networkConfig=await networkResponse.json();\n  const env = { DHD_NET_SERVER:networkConfig.relay||'', DHD_ISO:")
@@ -105,7 +110,7 @@ def adapt_worker(source):
     start=source.index('    host_file_read:');end=source.index('    host_file_write:',start)
     source=source[:start]+'''    host_file_read:new WebAssembly.Suspending(async(id,a,n)=>{const f=files.get(id);if(!f||f.sink)return 0n;const got=f.disc?await disc.read(f.pos,span(a,n)):vfs.read(f,span(a,n));if(f.disc)f.pos+=got;return BigInt(got);}),
 '''+source[end:]
-    source=source.replace('  const autoQuality=createAutoQuality();', '  const frameMetrics=createFrameMetrics();const autoQuality=createAutoQuality();')
+    source=source.replace('  const autoQuality=createAutoQuality(', '  const frameMetrics=createFrameMetrics();const autoQuality=createAutoQuality(')
     source=source.replace('const now = performance.now();if(!firstFrameMs)', 'const now = performance.now();frameMetrics.sample(now);if(!firstFrameMs)')
     source=source.replace('memoryBytes:memory.buffer.byteLength,bootMs:firstFrameMs', 'memoryBytes:memory.buffer.byteLength,bootMs:firstFrameMs,frameMetrics:frameMetrics.snapshot()')
     source=source.replace('  const [coreModule, graphicsModule, queueModule, vuModule]', "  post('load-stage',{text:'Compilando el motor y los módulos gráficos…'});\n  const [coreModule, graphicsModule, queueModule, vuModule]")
