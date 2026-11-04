@@ -16,5 +16,5 @@ assert.equal(isTouchDevice({navigator:{maxTouchPoints:0},matchMedia:()=>({matche
 assert.equal(isTouchDevice({navigator:{maxTouchPoints:0}}),false);
 assert.deepEqual(mobileDefaults({},true),{DHD_SCALE:'1',DHD_AUTO_MAX_SCALE:'2'});
 assert.equal(mobileDefaults({DHD_SCALE:'3'},true).DHD_SCALE,'3');
-assert.deepEqual(mobileDefaults({},false),{});
+assert.deepEqual(mobileDefaults({},false),{DHD_SCALE:'2',DHD_AUTO_MAX_SCALE:'2'});
 console.log('Shared touch/keyboard ownership, repeated/cancelled holds and mobile graphics defaults passed.');

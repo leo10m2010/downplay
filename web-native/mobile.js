@@ -3,7 +3,7 @@ export function isTouchDevice(scope=globalThis){
  return (scope.navigator?.maxTouchPoints||0)>0||Boolean(scope.matchMedia?.('(any-pointer: coarse)').matches);
 }
 export function mobileDefaults(env,touch=isTouchDevice()){
- return touch?{DHD_SCALE:'1',DHD_AUTO_MAX_SCALE:'2',...env}:env;
+ return {DHD_SCALE:touch?'1':'2',DHD_AUTO_MAX_SCALE:'2',...env};
 }
 
 // Pointer capture permits simultaneous steering/pedalling and releases cancelled touches.

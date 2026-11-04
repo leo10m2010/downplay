@@ -26,5 +26,6 @@ jobs:
       - run: node tests/load_progress_test.mjs
       - run: node tests/audio_ring_test.mjs
       - run: node tests/cache_queue_test.mjs
+      - run: node tests/cached_reads_test.mjs
       - run: node tests/release_modules_test.mjs
       - run: node tests/browser_network_test.mjs

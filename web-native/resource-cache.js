@@ -30,6 +30,23 @@ export function createRequestGate(maximum=2){
  const pump=()=>{while(active<maximum&&(demand.length||background.length)){const job=(demand.length?demand:background).shift();active++;Promise.resolve().then(job.action).then(job.resolve,job.reject).finally(()=>{active--;pump();});}};
  return (action,prefetch=false)=>new Promise((resolve,reject)=>{(prefetch?background:demand).push({action,resolve,reject});pump();});
 }
+// Return synchronously only when the whole requested range is already in RAM.
+// A miss leaves the destination untouched so the ordinary verified loader can run.
+export function copyCachedRange(memory,blockSize,size,pos,out){
+ if(!Number.isSafeInteger(pos)||pos<0)throw Error('Posición de lectura inválida.');
+ const length=Math.max(0,Math.min(out.length,size-pos));if(!length)return 0;
+ let done=0;
+ while(done<length){
+  const at=pos+done,index=Math.floor(at/blockSize),bytes=memory.get(index),offset=at%blockSize;
+  if(!bytes)return null;
+  const n=Math.min(length-done,bytes.length-offset);if(n<=0)throw Error('Recurso incompleto.');
+  done+=n;
+ }
+ done=0;
+ // No await between validation and copying: the map cannot change underneath us.
+ while(done<length){const at=pos+done,index=Math.floor(at/blockSize),bytes=memory.get(index),offset=at%blockSize,n=Math.min(length-done,bytes.length-offset);out.set(bytes.subarray(offset,offset+n),done);done+=n;memory.delete(index);memory.set(index,bytes);}
+ return done;
+}
 export async function createResourceSource(m,report){
  if(m.file)throw Error('Esta versión utiliza recursos preparados en el servidor.');
  const identityResponse=await fetch('game-identity.json',{cache:'no-store'});if(!identityResponse.ok)throw Error('No se pudo verificar la versión de los recursos.');
@@ -39,7 +56,7 @@ export async function createResourceSource(m,report){
  const head=await fetch(resourceUrl,{method:'HEAD',cache:'no-store'}),size=Number(head.headers.get('Content-Length'));
  if(!head.ok||!Number.isSafeInteger(size)||size<=0)throw Error('Recursos ausentes, versión distinta o tamaño inválido. Recarga la página.');
  const BLOCK=1048576,memory=new Map(),inflight=new Map(),gate=createRequestGate(2);let disk=await createBlockCache(),last=-Infinity;
- const stats={networkBytes:0,cacheBytes:0,memoryHits:0,requests:0,retries:0,readMs:0,maxReadMs:0,persistent:Boolean(disk),cacheWriteSkips:0,prefetched:0};
+ const stats={networkBytes:0,cacheBytes:0,memoryHits:0,syncReads:0,asyncReads:0,requests:0,retries:0,readMs:0,maxReadMs:0,persistent:Boolean(disk),cacheWriteSkips:0,prefetched:0};
  const publish=force=>{if(force||performance.now()-last>100){last=performance.now();report({...stats,pendingWrites:writes.pending});}};
  const disableDisk=()=>{disk?.close();disk=null;stats.persistent=false;};
  const writes=createCacheWriteQueue(async(...args)=>{if(disk)await disk.put(...args);},disableDisk,2);
@@ -70,7 +87,7 @@ export async function createResourceSource(m,report){
  };
  const prefetch=i=>{if(i*BLOCK<size&&!memory.has(i)&&!inflight.has(i)&&inflight.size<3)block(i,true).catch(()=>{});};
  publish(true);
- return {size,stats,async flush(){await writes.drain();},async read(pos,out){if(!Number.isSafeInteger(pos)||pos<0)throw Error('Posición de lectura inválida.');let done=0;
+ return {size,stats,readCached(pos,out){const got=copyCachedRange(memory,BLOCK,size,pos,out);if(got!==null){stats.syncReads++;if(got>0)stats.memoryHits+=Math.ceil((pos%BLOCK+got)/BLOCK);}return got;},async flush(){await writes.drain();},async read(pos,out){if(!Number.isSafeInteger(pos)||pos<0)throw Error('Posición de lectura inválida.');stats.asyncReads++;let done=0;
   const finalBlock=Math.floor((Math.min(size,pos+out.length)-1)/BLOCK);
   while(done<out.length&&pos+done<size){const at=pos+done,i=Math.floor(at/BLOCK),pending=block(i);if(i+1<=finalBlock)prefetch(i+1);if(i+2<=finalBlock)prefetch(i+2);const b=await pending,off=at%BLOCK,n=Math.min(out.length-done,b.length-off);if(n<=0)throw Error('Recurso incompleto.');out.set(b.subarray(off,off+n),done);done+=n;
   }return done;

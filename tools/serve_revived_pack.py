@@ -54,6 +54,8 @@ def adapt_main(source):
 const keyInput=createKeyInput(keys);
 installKeyboard(keys,canvas,keyInput.source());
 installTouch(keyInput,canvas);
+const syncVisibility=()=>Atomics.store(mouse,13,document.hidden?1:0);
+syncVisibility();document.addEventListener('visibilitychange',syncVisibility);
 window.nativeKeyboardDiagnostics=()=>Array.from(keys);
 '''+source[end:]
     source=source.replace("if (m.type === 'log') addLog(m.text);", "if (m.type === 'network-status') {window.nativeNetworkDiagnostics=m;const label=document.getElementById('network-room');if(label&&m.code)label.textContent='Sala '+m.code+(m.connected?' · conectada':' · desconectada');}\n    else if (m.type === 'log') addLog(m.text);")
@@ -85,22 +87,27 @@ addEventListener('blur',()=>pollGamepads(navigator.getGamepads?.(),false));
 def adapt_worker(source):
     source=source.replace('\r\n','\n')
     source=adapt_error_messages(source)
+    source=source.replace('...BROWSER_PC_SETTINGS, ...(m.env || {})', "...BROWSER_PC_SETTINGS,DHD_FPS_MAX:'60',...(m.env||{})")
     source="import {createBrowserNetwork} from './network.js';\nimport {createAutoQuality} from './quality.js';\nimport {fetchWithProgress} from './load-progress.js';\nimport {writePcm} from './audio-ring.js';\n"+source
     start=source.index('    host_sound_write:');end=source.index('    // The VBLANK',start)
     source=source[:start]+'''    host_sound_write:(a,frames)=>{soundFrames+=frames;writePcm(ring,span(a,frames*4));},
 '''+source[end:]
     source=source.replace("const fetchBytes = async url => { const r = await fetch(url); if (!r.ok) throw Error(`${url}: ${r.status}`); return r.arrayBuffer(); };", "const fetchBytes=url=>fetchWithProgress(url,progress=>post('load-progress',progress));")
-    source=source.replace("  const settings = await createSettings(env, say);", "  const settings = await createSettings(env, say);\n  const autoQuality=createAutoQuality({maximum:env.DHD_AUTO_MAX_SCALE==='2'?2:4});let firstFrameMs=0;")
+    source=source.replace("  const settings = await createSettings(env, say);", "  const settings = await createSettings(env, say);\n  const autoQuality=createAutoQuality({maximum:env.DHD_AUTO_MAX_SCALE==='4'?4:2});let firstFrameMs=0;")
     # Pin the ordinary in-game online menus to this server as well. An explicit
     # URL environment override still wins; saved upstream defaults must not.
     source=source.replace("  const env = { DHD_ISO:", "  const networkResponse=await fetch('network-config.json',{cache:'no-store'});if(!networkResponse.ok)throw Error('No se pudo leer la configuración de salas.');const networkConfig=await networkResponse.json();\n  const env = { DHD_NET_SERVER:networkConfig.relay||'', DHD_ISO:")
+    source=source.replace('lastReport = performance.now(), lastField = 0;', 'lastReport = performance.now(), lastField = 0, lastShown = 0;')
+    source=source.replace('if (now - lastReport >= 1000) {', 'if (now - lastReport >= 1000) {\n        const presentFps=Math.max(0,(shown-lastShown)*1000/(now-lastReport));')
+    source=source.replace("post('status', { field, fps:", "post('status', { presentFps,field,fps:")
+    source=source.replace('lastReport = now; lastField = field;', 'lastReport = now; lastField = field; lastShown = shown;')
     source=source.replace("    size = Number(head.getResponseHeader('Content-Length'));", "    if(head.status!==200)throw Error('No se encuentran los recursos preparados.');\n    size=Number(head.getResponseHeader('Content-Length'));if(!Number.isSafeInteger(size)||size<=0)throw Error('Tamaño de recursos inválido.');")
     source=source.replace("if (x.status !== 206) throw Error(`disc read ${x.status}`); return new Uint8Array(x.response);", "if(x.status!==206||x.response?.byteLength!==n)throw Error('Lectura de recursos incompleta ('+x.status+').');return new Uint8Array(x.response);")
     source=source.replace("    while (done < out.length && pos + done < size) {", "    if(!Number.isSafeInteger(pos)||pos<0)throw Error('Posición de lectura inválida.');\n    while (done < out.length && pos + done < size) {")
     source=source.replace("      const n = Math.min(out.length - done, b.length - off);", "      const n = Math.min(out.length - done, b.length - off);if(n<=0)throw Error('Recurso truncado.');")
     source=source.replace("      const now = performance.now();\n      if (now - lastReport >= 1000)", "      const now = performance.now();if(!firstFrameMs)firstFrameMs=now-t0;\n      if (now - lastReport >= 1000)")
     source=source.replace("      const now = performance.now();if(!firstFrameMs)", "      riding=dv.getInt32(0x0829E290,true)!==0;Atomics.store(mouse,12,riding?1:0);\n      const now = performance.now();if(!firstFrameMs)")
-    source=source.replace("renderer: 'rust', submits: stats(3), scale: stats(4), workers: threaded ? 3 : 1 });", "renderer:'rust',submits:stats(3),scale:stats(4),workers:threaded?3:1,memoryBytes:memory.buffer.byteLength,bootMs:firstFrameMs });\n        if(env.DHD_AUTO_QUALITY!=='0'){const next=autoQuality.sample({fps:(field-lastField)*1000/(now-lastReport),riding,scale:stats(4)},now);if(next!==null){setEnv('DHD_SCALE',String(next));say('Calidad automática: resolución x'+next);}}")
+    source=source.replace("renderer: 'rust', submits: stats(3), scale: stats(4), workers: threaded ? 3 : 1 });", "renderer:'rust',submits:stats(3),scale:stats(4),workers:threaded?3:1,memoryBytes:memory.buffer.byteLength,bootMs:firstFrameMs });\n        if(env.DHD_AUTO_QUALITY!=='0'){const next=autoQuality.sample({fps:Math.min(presentFps,(field-lastField)*1000/(now-lastReport)),riding,scale:stats(4)},now);if(next!==null){setEnv('DHD_SCALE',String(next));say('Calidad automática: resolución x'+next);}}")
     anchor='  const graphicsExports = new Set('
     if source.count(anchor)!=1:raise ValueError('Unsupported network insertion point')
     source=source.replace(anchor,"  Object.assign(impl,(await createBrowserNetwork({env,span,str,say})).services);\n"+anchor)
@@ -110,7 +117,12 @@ def adapt_worker(source):
     source=source[:start]+source[end:]
     source=source.replace('  const disc = discSource(m);', "  post('load-stage',{text:'Verificando recursos y caché local…'});\n  const disc=await createResourceSource(m,data=>post('resource-progress',data));")
     start=source.index('    host_file_read:');end=source.index('    host_file_write:',start)
-    source=source[:start]+'''    host_file_read:new WebAssembly.Suspending(async(id,a,n)=>{const f=files.get(id);if(!f||f.sink)return 0n;const got=f.disc?await disc.read(f.pos,span(a,n)):vfs.read(f,span(a,n));if(f.disc)f.pos+=got;return BigInt(got);}),
+    source=source[:start]+'''    host_file_read:new WebAssembly.Suspending((id,a,n)=>{
+      const f=files.get(id);if(!f||f.sink)return 0n;
+      const out=span(a,n);if(!f.disc)return BigInt(vfs.read(f,out));
+      const cached=disc.readCached(f.pos,out);if(cached!==null){f.pos+=cached;return BigInt(cached);}
+      return disc.read(f.pos,out).then(got=>{f.pos+=got;return BigInt(got);});
+    }),
 '''+source[end:]
     source=source.replace('  const autoQuality=createAutoQuality(', '  const frameMetrics=createFrameMetrics();const autoQuality=createAutoQuality(')
     source=source.replace('const now = performance.now();if(!firstFrameMs)', 'const now = performance.now();frameMetrics.sample(now);if(!firstFrameMs)')
@@ -123,7 +135,8 @@ def adapt_worker(source):
     source=source.replace("    post('running', {});", "    loadStage('startup','Iniciando el juego…');post('running', {});")
     source=source.replace("  post('running', {});", "  loadStage('startup','Iniciando el juego…');post('running', {});")
     source=source.replace('if(!firstFrameMs)firstFrameMs=now-t0;', "if(!firstFrameMs){firstFrameMs=now-t0;loadStage('menu','Menú original listo.');}if(riding&&!firstRaceMs){firstRaceMs=now-t0;loadStage('race','En pista.');}")
-    source=source.replace('frameMetrics:frameMetrics.snapshot()', 'frameMetrics:frameMetrics.snapshot(),loadTimings:{...loadTimings,firstMenuMs:firstFrameMs,firstRaceMs}')
+    source=source.replace('frameMetrics:frameMetrics.snapshot()', 'frameMetrics:frameMetrics.snapshot(),resourceIO:{syncReads:disc.stats.syncReads,asyncReads:disc.stats.asyncReads},loadTimings:{...loadTimings,firstMenuMs:firstFrameMs,firstRaceMs}')
+    source=source.replace("if(env.DHD_AUTO_QUALITY!=='0'){", "if(env.DHD_AUTO_QUALITY!=='0'&&!Atomics.load(mouse,13)){")
     return source
 
 def adapt_error_messages(source):

@@ -19,8 +19,9 @@ setInterval(()=>{
  document.body.classList.toggle('ready',Boolean(game)&&!failed);
  $('retryButton').hidden=!failed;
  $('engine-state').textContent=failed?'No se pudo continuar':game?(game.riding?'En pista':'Menú original'):'Preparando motor';
- $('engine-rate').textContent=game?`${game.fps.toFixed(0)} Hz`:'— Hz';
+ $('engine-rate').textContent=game?`${(game.presentFps??game.fps).toFixed(0)} FPS`:'— FPS';
  if(game)$('runtime-metrics').textContent=`Resolución x${game.scale} · memoria del motor ${(game.memoryBytes/1048576).toFixed(0)} MiB · registro limitado a 120 muestras`;
+ if(game?.resourceIO)$('runtime-metrics').textContent+=` · lecturas directas ${game.resourceIO.syncReads} / con espera ${game.resourceIO.asyncReads} · simulación ${game.fps.toFixed(0)} Hz`;
  const audio=window.nativeAudioDiagnostics?.();if(game){const f=game.frameMetrics;$('runtime-metrics').textContent+=f?` · fotograma p95 ${f.p95Ms.toFixed(1)} ms · ${f.stalls} pausas >50 ms`:'';if(audio)$('runtime-metrics').textContent+=` · audio: ${audio.underruns||0} cortes, ${(audio.queuedMs||0).toFixed(0)} ms en cola`;}
  const resource=window.nativeResourceProgress;if(resource)$('resource-metrics').textContent=`Recursos: ${(resource.networkBytes/1048576).toFixed(1)} MiB de red · ${(resource.cacheBytes/1048576).toFixed(1)} MiB de caché local · ${resource.retries} reintentos`;
  const downloads=Object.values(window.nativeLoadProgress||{}),bar=$('load-progress');

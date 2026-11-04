@@ -102,8 +102,19 @@ presentar las mejoras de esta interfaz como una reconstrucción completa del mot
 
 La caché usa hasta 48 MiB en memoria y 128 MiB de almacenamiento, además de la
 memoria del propio motor. Los recursos se descargan por demanda; la primera
-carga depende de la conexión de subida del servidor. La resolución se adapta entre
-x1 y x4 sin alterar la velocidad del juego. No se promete una tasa fija de FPS.
+carga depende de la conexión de subida del servidor. El modo automático empieza
+en x2 en PC (x1 en dispositivos táctiles) y se ajusta entre x1 y x2. Conserva
+durante la sesión el límite de resolución que ha funcionado, para evitar subidas
+y bajadas repetidas. La versión web limita por defecto el objetivo a 60 Hz, incluso
+si los ajustes guardados pedían 120/144 Hz. No se promete una tasa fija de FPS.
+Los ajustes explícitos de desarrollo `env.DHD_SCALE`, `env.DHD_AUTO_MAX_SCALE=4`
+y `env.DHD_FPS_MAX` permiten comparar otros valores.
+
+Las lecturas de recursos ya verificados en RAM y de guardados se entregan al
+núcleo sin esperar una promesa; las descargas y la caché en disco mantienen la
+lectura asíncrona y su validación. El contador principal muestra cuadros
+presentados por el renderizador; el diagnóstico conserva por separado los
+pasos de simulación y el número de lecturas directas/con espera.
 
 Consulta [docs/TESTING.md](docs/TESTING.md) y [docs/RELEASE.md](docs/RELEASE.md) para
 los resultados, condiciones de prueba y comprobaciones pendientes. El código

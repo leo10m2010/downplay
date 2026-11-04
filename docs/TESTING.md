@@ -19,6 +19,7 @@ node tests/audio_ring_test.mjs
 node tests/quality_test.mjs
 node tests/load_progress_test.mjs
 node tests/cache_queue_test.mjs
+node tests/cached_reads_test.mjs
 node tests/release_modules_test.mjs
 ```
 
@@ -45,12 +46,24 @@ ajeno ni a partidas de otros usuarios.
   medición de avance de campos, memoria, cola de audio y registros.
 
 `web_quality_pressure_check.js` ejecuta los menús reales en dos contextos
-aislados. En uno usa los FPS reales; en otro inyecta 12 FPS únicamente como
-entrada al controlador de calidad. Comprueba que la resolución del renderizador
+aislados, usando el servidor candidato en 8096. En uno usa los FPS reales; en
+otro inyecta 12 FPS únicamente en el dato de presentación, manteniendo el avance
+real de la simulación. Comprueba que la resolución del renderizador
 real baja de x4 a x1 y que la simulación continúa. No es una medición de un equipo
 que realmente funcione a 12 FPS ni demuestra corregido el rendimiento de Brave.
 El controlador reduce también en menús, responde en pocos segundos a una carga
 grave sostenida y solo recupera resolución tras rendimiento estable en carrera.
+El modo automático queda limitado a x2 y recuerda en la sesión qué resolución
+falló, para evitar volver repetidamente a ese nivel.
+
+`web_performance_check.js` compara una copia previa en 8097 con el candidato en
+8096. Usa la misma carrera, pide 144 Hz y recoge diez muestras por versión después
+de doce segundos de calentamiento. Comprueba que el candidato aplica el límite
+de 60 Hz, mantiene presentación y usa tanto lecturas directas como asíncronas.
+En la comprobación local se midieron 59,95 Hz de mediana y 416 lecturas de RAM sin
+suspensión frente a 48 lecturas asíncronas. La versión previa ya alcanzaba 144 Hz
+en ese PC: esto acredita reducción de trabajo y ausencia de fallos observados,
+no una mejora de FPS en el PC lento del usuario ni una medición prolongada.
 
 `web_mobile_check.js` usa el servidor candidato en 8096 y Chrome con pantalla
 390×844 / 844×390 y entrada táctil mediante CDP. Ejecuta el núcleo real, verifica
