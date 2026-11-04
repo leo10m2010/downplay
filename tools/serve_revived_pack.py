@@ -30,6 +30,7 @@ TYPES={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8'
 ADAPTERS={name:ROOT/'web-native'/name for name in ('index.html','shell.css','ui.js','keyboard.js','gamepads.js','network.js','network-launcher.js','quality.js','lifecycle.js','saves.js','load-progress.js','audio-ring.js')}
 ADAPTERS['LICENSE']=ROOT/'LICENSE'
 ADAPTERS.update({name:ROOT/'web-native'/name for name in ('mobile.js','input-state.js')})
+ADAPTERS['gpu-probe.js']=ROOT/'web-native/gpu-probe.js'
 ADAPTERS['network-policy.js']=ROOT/'web-native/network-policy.js'
 ADAPTERS.update({name:ROOT/'web-native'/name for name in ('bootstrap.js','compatibility.js','runtime-session.js','save-store.js','save-ui.js','resource-cache.js','audio.js','audio-consumer.js','frame-metrics.js')})
 ADAPTERS.update({name:NETWORK/name for name in ('network-core.js','network-core.wasm')})
@@ -83,6 +84,7 @@ addEventListener('blur',()=>pollGamepads(navigator.getGamepads?.(),false));
 
 def adapt_worker(source):
     source=source.replace('\r\n','\n')
+    source=adapt_error_messages(source)
     source="import {createBrowserNetwork} from './network.js';\nimport {createAutoQuality} from './quality.js';\nimport {fetchWithProgress} from './load-progress.js';\nimport {writePcm} from './audio-ring.js';\n"+source
     start=source.index('    host_sound_write:');end=source.index('    // The VBLANK',start)
     source=source[:start]+'''    host_sound_write:(a,frames)=>{soundFrames+=frames;writePcm(ring,span(a,frames*4));},
@@ -123,6 +125,10 @@ def adapt_worker(source):
     source=source.replace('if(!firstFrameMs)firstFrameMs=now-t0;', "if(!firstFrameMs){firstFrameMs=now-t0;loadStage('menu','Menú original listo.');}if(riding&&!firstRaceMs){firstRaceMs=now-t0;loadStage('race','En pista.');}")
     source=source.replace('frameMetrics:frameMetrics.snapshot()', 'frameMetrics:frameMetrics.snapshot(),loadTimings:{...loadTimings,firstMenuMs:firstFrameMs,firstRaceMs}')
     return source
+
+def adapt_error_messages(source):
+    return "import {formatRuntimeError} from './gpu-probe.js';\n"+source.replace('String(err?.stack || err)','formatRuntimeError(err)')
+
 
 def adapt_vfs(source):
     source=source.replace('\r\n','\n')
@@ -178,7 +184,8 @@ class Handler(BaseHTTPRequestHandler):
         name=route.lstrip('/') or 'index.html'
         if name not in PUBLIC and name not in ADAPTERS:self.send_error(404);return
         path=ADAPTERS[name] if name in ADAPTERS else RUNTIME/name
-        transform=adapt_main if name=='main.js' else adapt_worker if name=='worker.js' else adapt_vfs if name=='vfs.js' else None
+        transform={'main.js':adapt_main,'worker.js':adapt_worker,'vfs.js':adapt_vfs,
+                   'graphics.js':adapt_error_messages,'vu.js':adapt_error_messages}.get(name)
         raw,compressed,etag=CODE_CACHE.get(path,transform)
         zipped=compressed is not raw and accepts_gzip(self.headers.get('Accept-Encoding',''))
         data=compressed if zipped else raw

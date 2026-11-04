@@ -24,7 +24,7 @@ for(const mutate of [d=>d.files[0].data='AAAAAA==',d=>d.files.push({...d.files[0
  const bad=structuredClone(doc);mutate(bad);await assert.rejects(()=>validateBackup(JSON.stringify(bad)));
 }
 await assert.rejects(()=>validateBackup('{invalid'));
-const scope={isSecureContext:true,crossOriginIsolated:true,SharedArrayBuffer,WebAssembly:{...WebAssembly,Suspending:class{},promising(){},Memory:WebAssembly.Memory},Worker:class{},OffscreenCanvas:class{},HTMLCanvasElement:{prototype:{transferControlToOffscreen(){}}},navigator:{gpu:{async requestAdapter(){return {}; }},locks:{}},indexedDB:{},AudioContext:class{},AudioWorkletNode:class{}};
+const scope={isSecureContext:true,crossOriginIsolated:true,SharedArrayBuffer,WebAssembly:{...WebAssembly,Suspending:class{},promising(){},Memory:WebAssembly.Memory},Worker:class{},OffscreenCanvas:class{},HTMLCanvasElement:{prototype:{transferControlToOffscreen(){}}},navigator:{gpu:{async requestAdapter(){return {async requestDevice(){return {createShaderModule(){return {};},async createComputePipelineAsync(){},destroy(){}};}}; }},locks:{}},indexedDB:{},AudioContext:class{},AudioWorkletNode:class{}};
 assert.equal((await checkCompatibility(scope)).ok,true);
 assert.equal((await checkCompatibility({...scope,crossOriginIsolated:false})).ok,false);
 assert.equal((await checkCompatibility({...scope,navigator:{...scope.navigator,gpu:{async requestAdapter(){return null;}}}})).ok,false);

@@ -13,6 +13,7 @@ preparado utiliza únicamente la biblioteca estándar de Python.
 python3 -m unittest discover -s tests -p 'test_*.py'
 node tests/keyboard_bindings_test.mjs
 node tests/mobile_input_test.mjs
+node tests/gpu_probe_test.mjs
 node tests/gamepads_test.mjs
 node tests/audio_ring_test.mjs
 node tests/quality_test.mjs
@@ -58,6 +59,11 @@ al deslizar, pantalla completa y entrada a carrera. No mide una GPU móvil ni
 acredita compatibilidad con Android/Brave físicos. Para repetirlo, inicia
 `python3 tools/run_linux_host.py --config host.json --port 8096` y ejecútalo con
 Playwright CLI mediante `run-code --filename tests/web_mobile_check.js`.
+
+`web_gpu_probe_check.js` comprueba en Chrome la compilación de una operación CAS
+y el arranque real. En otro contexto inyecta el error Metal comunicado por el
+iPhone: la página debe explicarlo antes de descargar `dhd_core.wasm` o crear el
+trabajador del juego. La prueba no acredita una corrección del compilador de iOS.
 
 Varias instancias en un mismo PC sirven para comprobar integración y carga, pero
 no acreditan una partida entre equipos y conexiones diferentes. El rendimiento

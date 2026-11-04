@@ -40,6 +40,13 @@ emulados; quedan pendientes las pruebas en teléfonos Android físicos y Brave
 Android. En iPhone también se requieren todas las funciones comprobadas al entrar;
 no se garantiza compatibilidad por instalar Chrome o Brave.
 
+El iPhone 15 Pro Max del usuario presentó un error de compilación Metal en
+`atomicCompareExchangeWeak` (campo con un espacio de direcciones). WebKit tiene
+una [corrección en sus fuentes](https://github.com/WebKit/WebKit/commit/4f56cc248e8a2e447f77d54d7612d2a6128daccb);
+no se ha identificado qué versión instalada de iOS la incorpora. La página prueba
+ahora esa operación antes de cargar el núcleo y recomienda actualizar iOS cuando
+detecta el fallo. Esto **no acredita que el juego funcione en ese iPhone**.
+
 Referencias del navegador: [WebGPU](https://developer.chrome.com/docs/web-platform/webgpu/troubleshooting-tips)
 y [WebAssembly JSPI](https://v8.dev/blog/jspi).
 
