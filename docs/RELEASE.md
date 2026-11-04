@@ -1,4 +1,48 @@
-# Entrega privada 1.0.0-rc.1 — verificación del 3 de noviembre de 2026
+# Entrega privada 1.0.0-rc.2 — actualización del 4 de noviembre de 2026
+
+Núcleo oficial Revived 0.7.9, revisión
+`7cd9543f3144bd03beb27f20bbd4e0739c453128`, protocolo 2.
+Se verifican los módulos descargados mediante SHA-256; se recompiló el auxiliar
+C de red con Emscripten 6.0.12. La compilación integral del núcleo sigue pendiente.
+
+La actualización incorpora la corrección upstream 0.7.8 de tiempo de simulación
+y producción de sonido entre 30 y 240 FPS. Por debajo de 30 FPS el núcleo todavía
+puede ralentizarse. No aumenta por sí sola la capacidad de la CPU/GPU del jugador.
+[Notas upstream](https://github.com/skuza-oss/downhill-revived/releases/tag/v0.7.8).
+
+Comparación con carrera real y el mismo retraso artificial de 24 ms por fotograma:
+
+| Núcleo | FPS finales | Segundos de audio producidos por segundo real | Cortes durante 12 s |
+|---|---:|---:|---:|
+| 0.7.2 | 31,86 | 0,558 | 56 |
+| 0.7.9 | 31,89 | 1,007 | 0 |
+
+Cada medición se tomó después de 10 segundos de calentamiento con audio activo.
+Es una prueba controlada en el PC de desarrollo, no una medición en el i5 de
+tercera generación/GT 1030 del usuario ni una prueba prolongada sin cortes.
+
+El Worker conserva el protocolo 1 y sus objetos; el protocolo 2 utiliza nuevas
+clases y el prefijo `/v2`. El cliente mantiene el inicio elegido de 2/3/4 jugadores
+mediante una barrera explícita del anfitrión. Los recursos preparados no cambian,
+ni se borran las tarjetas. Los replays anteriores a 0.7.8 pueden ser incompatibles
+con el nuevo núcleo; se conservan sus archivos. No se acredita una solución al
+fallo del compilador Metal de iPhone mediante esta actualización.
+
+Verificación de esta actualización: 39 pruebas Python (una omitida en Windows),
+11 suites Node de módulos, cliente C de protocolo 2 y arranque de dos clientes
+de protocolo 1. Carreras reales de 2, 3 y 4 instancias en Chrome, todas en el mismo
+PC y con el Worker local: puestos distintos, intercambio de estados, espera de
+siete segundos antes del último jugador y notificación de salida del anfitrión.
+Estas pruebas cortas no sustituyen carreras completas desde conexiones distintas.
+
+Worker existente actualizado: despliegue `76a79db9-22fe-4d4f-8be3-8d4914758670`.
+Comprobación pública posterior: ambos health endpoints, creación/unión/inicio
+con protocolo 1; cliente C de protocolo 2 con espera de tres, abandono en sala,
+inicio con tres puestos, rechazo por sala llena y salida del anfitrión.
+El cambio en Linux requiere `git pull --ff-only`, reiniciar `downhill-web` y
+recargar el navegador. No requiere transferir otra vez los recursos del juego.
+
+## Registro de la entrega anterior (rc.1, 3 de noviembre)
 
 Aplicación 1.0.0-rc.1; núcleo Revived 0.7.2, protocolo 1, revisión
 `244cf4cef10da5492ca878e3b97ec74656dbc5e5`. Se mantiene el núcleo existente:

@@ -27,12 +27,33 @@ node tests/release_modules_test.mjs
 `python3 tools/build_browser_network.py`. La prueba utiliza el cliente C original,
 incluidos mensajes, selección, puestos y tramas binarias.
 
+Con el Worker local en 8788 y el servidor de recursos candidato en 8096:
+
+```sh
+node tests/relay_legacy_test.mjs
+DHD_TEST_RELAY=ws://127.0.0.1:8788/v2 node tests/relay_integration_test.mjs
+```
+
+El segundo usa el cliente C real de protocolo 2. Para probar el Worker publicado,
+cambia la variable por `wss://downhill-web-relay.dowh.workers.dev/v2`; el test
+antiguo usa la misma variable sin `/v2` y no toca salas ajenas.
+
 ## Navegador y pruebas prolongadas
 
 Los escenarios `web_*.js` se ejecutan mediante Playwright CLI (`run-code --filename`).
 Los puertos indicados dentro de cada escenario identifican el servidor candidato
 y la instalación anterior de referencia. No deben apuntar a un servidor público
 ajeno ni a partidas de otros usuarios.
+
+`web_online_matrix_check.js` comprueba 2/3/4 núcleos reales, puestos distintos,
+estados intercambiados y salida del anfitrión. Utiliza 8096 y el Worker local en
+8788, sustituyendo solo la configuración de salas en su contexto aislado.
+
+`web_audio_clock_check.js` compara 0.7.2 en 8097 y 0.7.9 en 8096 con una pausa
+inyectada de 24 ms por fotograma. Verifica la cantidad de audio producido por
+segundo real y mide cortes después de 10 segundos de calentamiento. La copia
+anterior debe estar íntegra, con sus adaptadores y módulo de red correspondientes;
+no mezclar módulos de versiones distintas para preparar la referencia.
 
 - Guardados: importación real al IndexedDB, compatibilidad VFS, otra tarjeta,
   detención entre pestañas y error de cuota provocado durante una escritura.

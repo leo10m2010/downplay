@@ -21,7 +21,7 @@ from prepared_disc import PreparedDisc,ROOT,BLOCK
 from http_code_cache import CodeCache,accepts_gzip
 from project_paths import RUNTIME,NETWORK,ASSETS
 
-PUBLIC={'index.html','main.js','worker.js','settings.js','graphics_common.js','graphics.js',
+PUBLIC={'index.html','main.js','worker.js','settings.js','graphics_common.js','graphics.js','net.js','net_layout.js',
         'vu.js','vfs.js','thunks.js','audio.js','build/imports.json','build/dhd_settings.wasm',
         'build/dhd_core.wasm','build/graphics.wasm','build/gqueue.wasm','build/vu.wasm',
         'build/renderer/dhd_render.js','build/renderer/dhd_render_bg.wasm'}

@@ -8,7 +8,7 @@ try{
  const check=await checkCompatibility();window.nativeCompatibility=check;
  if(!check.ok)throw Error(check.errors.join(' '));
  const response=await fetch('release.json',{cache:'no-store'});if(!response.ok)throw Error('Actualiza también el servidor de esta versión.');
- const release=await response.json();if(release.appVersion!=='1.0.0-rc.1'||release.protocol!==1)throw Error('La página y el servidor tienen versiones distintas. Recarga la página o completa la actualización.');window.nativeRelease=release;
+ const release=await response.json();if(release.appVersion!=='1.0.0-rc.2'||release.protocol!==2)throw Error('La página y el servidor tienen versiones distintas. Recarga la página o completa la actualización.');window.nativeRelease=release;
  document.getElementById('compatibility-message').textContent=check.warnings.join(' ');
  await acquireGameLease();if(!window.nativeSessionStopped)await import('./main.js');
 }catch(error){

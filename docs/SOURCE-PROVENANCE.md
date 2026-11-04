@@ -1,8 +1,11 @@
 # Procedencia del núcleo y del código
 
 - Núcleo de referencia: https://github.com/skuza-oss/downhill-revived
-- Revisión fijada: `244cf4cef10da5492ca878e3b97ec74656dbc5e5`.
-- Versión del núcleo/protocolo: 0.7.2 / 1.
+- Revisión fijada: `7cd9543f3144bd03beb27f20bbd4e0739c453128`.
+- Versión del núcleo/protocolo: 0.7.9 / 2.
+- El Worker mantiene el servidor 0.7.2/protocolo 1 en sus rutas anteriores.
+  El servidor 0.7.9 utiliza `/v2/v1/...` y objetos persistentes separados.
+  `relay/SOURCE.json` registra ambas procedencias y adaptaciones.
 - Los módulos oficiales de evaluación conservan su `download-manifest.json` y se
   verifican contra él antes de servirlos o empaquetarlos.
 - La compilación integral de esos módulos desde las fuentes aún no está reproducida
@@ -25,7 +28,7 @@ nueva, clona las fuentes de referencia y activa el SDK de tu propio sistema:
 
 ```sh
 git clone https://github.com/skuza-oss/downhill-revived vendor/revived
-git -C vendor/revived checkout 244cf4cef10da5492ca878e3b97ec74656dbc5e5
+git -C vendor/revived checkout 7cd9543f3144bd03beb27f20bbd4e0739c453128
 git clone https://github.com/emscripten-core/emsdk "$HOME/.cache/downhill-toolchains/emsdk-6.0.12"
 cd "$HOME/.cache/downhill-toolchains/emsdk-6.0.12"
 ./emsdk install 6.0.12

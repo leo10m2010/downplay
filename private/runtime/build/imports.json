@@ -148,7 +148,7 @@
     "params": []
   },
   "host_frame_video": {
-    "result": "void",
+    "result": "u32",
     "params": [
       "f64",
       "u32"
@@ -438,6 +438,12 @@
     "result": "u32",
     "params": []
   },
+  "host_service_gs_scale": {
+    "result": "u32",
+    "params": [
+      "u32"
+    ]
+  },
   "host_service_host_setting_save": {
     "result": "u32",
     "params": [
@@ -472,13 +478,7 @@
     "result": "void",
     "params": []
   },
-  "host_service_net_get_lobby": {
-    "result": "void",
-    "params": [
-      "u32"
-    ]
-  },
-  "host_service_net_racing": {
+  "host_service_net_offered": {
     "result": "u32",
     "params": []
   },
@@ -490,23 +490,23 @@
       "u32"
     ]
   },
-  "host_service_gs_native_view": {
+  "host_service_net_get_lobby": {
     "result": "void",
     "params": [
       "u32"
     ]
   },
-  "host_service_net_hash_ranges": {
-    "result": "u64",
-    "params": [
-      "u32",
-      "u32"
-    ]
+  "host_service_net_server_ms": {
+    "result": "f64",
+    "params": []
   },
-  "host_stack_ranges_copy": {
-    "result": "u32",
+  "host_service_net_end_race": {
+    "result": "void",
+    "params": []
+  },
+  "host_service_gs_native_view": {
+    "result": "void",
     "params": [
-      "u32",
       "u32"
     ]
   },
@@ -567,13 +567,30 @@
     "result": "void",
     "params": []
   },
-  "host_service_net_server_ms": {
-    "result": "f64",
+  "host_service_net_racing": {
+    "result": "u32",
     "params": []
   },
-  "host_service_net_leave": {
+  "host_service_net_finish": {
     "result": "void",
-    "params": []
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_service_net_hash_ranges": {
+    "result": "u64",
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_stack_ranges_copy": {
+    "result": "u32",
+    "params": [
+      "u32",
+      "u32"
+    ]
   },
   "host_service_gs_window_title": {
     "result": "void",
@@ -587,6 +604,14 @@
       "u32",
       "u32"
     ]
+  },
+  "host_service_net_leave": {
+    "result": "void",
+    "params": []
+  },
+  "host_service_net_back": {
+    "result": "void",
+    "params": []
   },
   "host_service_disc_check_start": {
     "result": "u32",
@@ -626,15 +651,30 @@
     "result": "void",
     "params": []
   },
+  "host_service_update_request": {
+    "result": "void",
+    "params": []
+  },
   "host_service_net_list_lobbies_start": {
     "result": "u32",
     "params": [
       "u32"
     ]
   },
-  "host_service_update_request": {
+  "host_service_net_rotation": {
     "result": "void",
-    "params": []
+    "params": [
+      "u32",
+      "u32"
+    ]
+  },
+  "host_service_net_rules": {
+    "result": "void",
+    "params": [
+      "u32",
+      "u32",
+      "u32"
+    ]
   },
   "host_service_clipboard_set": {
     "result": "u32",
@@ -745,6 +785,12 @@
     "params": []
   },
   "host_service_presence": {
+    "result": "void",
+    "params": [
+      "u32"
+    ]
+  },
+  "host_service_touch_field": {
     "result": "void",
     "params": [
       "u32"

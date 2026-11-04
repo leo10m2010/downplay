@@ -17,8 +17,8 @@ Repositorio privado: https://github.com/leo10m2010/downplay.
   Esta instalación usa aproximadamente 2,36 GiB de recursos. Otras descargas y
   versiones también consumen cuota; el presupuesto cero bloquea sobrecostes.
   Referencia: https://docs.github.com/en/billing/concepts/product-billing/git-lfs.
-- El núcleo utilizado es Downhill Revived 0.7.2, protocolo 1, revisión
-  `244cf4cef10da5492ca878e3b97ec74656dbc5e5`. Su compilación integral no está
+- El núcleo utilizado es Downhill Revived 0.7.9, protocolo 2, revisión
+  `7cd9543f3144bd03beb27f20bbd4e0739c453128`. Su compilación integral no está
   reproducida aquí. Los módulos conservados permiten instalar sin compilarlo.
 - Hubo una sesión individual de 60 minutos y otra de tres clientes durante 30
   minutos, en un PC. No equivalen a pruebas entre equipos/redes diferentes.
@@ -147,6 +147,11 @@ protocolo 1 y versión mínima 0.7.2. Esto acredita el servicio de salas, no el
 dominio del juego ni una instalación Linux ya terminada. Algunos clientes HTTP
 sin agente de navegador recibieron 403; comprobar también con navegador antes
 de concluir que el Worker está caído.
+
+Desde la aplicación rc.2, el cliente consulta salas de protocolo 2 bajo `/v2`;
+su comprobación es `/v2/v1/health` (protocolo 2, mínimo 0.7.9). La ruta anterior
+sigue disponible para las instalaciones antiguas. Mantener `host.json` sin `/v2`.
+Actualizar todos los jugadores y crear una sala nueva para usar la misma versión.
 
 La documentación oficial del recorrido dominio → túnel → servicio local está en
 https://developers.cloudflare.com/tunnel/get-started/.

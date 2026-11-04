@@ -18,7 +18,7 @@ async(page)=>{
    if(port===8096){
     if(!last.resourceIO?.syncReads||!last.resourceIO.asyncReads)throw Error('Real game did not use both verified resource paths');
     if(!Number.isFinite(last.presentFps)||last.presentFps<1)throw Error('Presentation metrics absent');
-    if(!log.includes('fps: requested 60 real steps/s'))throw Error('High-refresh setting bypassed the stability cap');
+    if(!/fps: requested 60 (?:real steps\/s|steps\/s at most)/.test(log))throw Error('High-refresh setting bypassed the stability cap');
     if(last.scale>2)throw Error('Automatic mode raised above x2');
    }
    if(errors.length)throw Error(errors.join('; '));

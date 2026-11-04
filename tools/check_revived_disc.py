@@ -4,7 +4,7 @@
 
 This checks disc compatibility only, not build readiness or successful gameplay.
 Expected identity: skuza-oss/downhill-revived, port/hle/game_data.c at
-244cf4cef10da5492ca878e3b97ec74656dbc5e5 (GPL-3.0-or-later).
+7cd9543f3144bd03beb27f20bbd4e0739c453128 (GPL-3.0-or-later).
 """
 import argparse
 import hashlib
@@ -14,7 +14,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 UPSTREAM = 'https://github.com/skuza-oss/downhill-revived'
-REVISION = '244cf4cef10da5492ca878e3b97ec74656dbc5e5'
+REVISION = '7cd9543f3144bd03beb27f20bbd4e0739c453128'
 USA_ELF = 'SCUS_971.77'
 USA_BYTES = 1691684
 USA_SHA1 = '4e25a222ad8a475b5d26c2e928e90b5f2b7075eb'

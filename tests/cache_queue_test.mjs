@@ -14,4 +14,4 @@ console.log('Cache writes are bounded/nonblocking; quota failure disables cachin
 
 const {transportText}=await import('../web-native/network-policy.js');
 const hello=JSON.stringify({type:'hello',features:['countdown','other'],protocol:1});
-assert.deepEqual(JSON.parse(transportText(hello,true)).features,['other']);assert.equal(transportText(hello,false),hello);assert.equal(transportText('raw',true),'raw');
+assert.deepEqual(JSON.parse(transportText(hello,true)).features,['other','external-player-barrier']);assert.equal(transportText(hello,false),hello);assert.equal(transportText('raw',true),'raw');

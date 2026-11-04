@@ -1,8 +1,64 @@
 {
   "origin": "https://downhill-revived.pages.dev/play/",
-  "sourceRevision": "244cf4cef10da5492ca878e3b97ec74656dbc5e5",
+  "sourceRevision": "7cd9543f3144bd03beb27f20bbd4e0739c453128",
   "sourceBuildReproduced": false,
+  "coreVersion": "0.7.9",
   "files": [
+    {
+      "name": "audio.js",
+      "bytes": 912,
+      "sha256": "d53338c6868552e3519b11d1aa2c686cc2539b66b37c1e2da3b65212ff20e568"
+    },
+    {
+      "name": "build/dhd_core.wasm",
+      "bytes": 13926861,
+      "sha256": "4af6c72cff316f130dbc8992ec6f8e2836a69d2a17190b66db17371a9e21b1d1"
+    },
+    {
+      "name": "build/dhd_settings.wasm",
+      "bytes": 50444,
+      "sha256": "68b59b4666a100a50b31028f759a7132193964bf54ae71ecfc3cca9741f519b3"
+    },
+    {
+      "name": "build/gqueue.wasm",
+      "bytes": 5508,
+      "sha256": "31f843d0426ddc856ce9ca2cf5247b7148365cbc67b51d1189a611f5e17784b2"
+    },
+    {
+      "name": "build/graphics.wasm",
+      "bytes": 153960,
+      "sha256": "8cf13c1f5a7c1e51c3e0a00cfc3e4bb7493067afd547581e6ae94a848fb71ff8"
+    },
+    {
+      "name": "build/imports.json",
+      "bytes": 13497,
+      "sha256": "9878457d16d22c7d29d2d3f1d9c8b23b89754930085da01883a83f85044fc712"
+    },
+    {
+      "name": "build/renderer/dhd_render.js",
+      "bytes": 72593,
+      "sha256": "cc09a3b3507848cf43cedb88844b3b24f7f3cc09beb3f9cf3cf5a5771ef73899"
+    },
+    {
+      "name": "build/renderer/dhd_render_bg.wasm",
+      "bytes": 431478,
+      "sha256": "899bcfa8c434dbbbda89949ded93ede71fc4f678884e095f8f63c7ad710933f2"
+    },
+    {
+      "name": "build/vu.wasm",
+      "bytes": 5763615,
+      "sha256": "abcd523baefe767674fafa253908c05d7b9d48e76aebe7e4e1d65c9585ae5725"
+    },
+    {
+      "name": "graphics.js",
+      "bytes": 5652,
+      "sha256": "09fd32a525d836e3e5357492267f46bc700e4242362e863471d55257c588fbdb"
+    },
+    {
+      "name": "graphics_common.js",
+      "bytes": 4667,
+      "sha256": "7e4da600657cd34ae1cf90ef517cd8fe1b5c4500d219122a6a33b54fe51fb495"
+    },
     {
       "name": "index.html",
       "bytes": 13876,
@@ -14,84 +70,39 @@
       "sha256": "33dd2bfbf758998a5c13a722d7868cf7ec274939be0966b29e6ac2fa0b6903be"
     },
     {
-      "name": "worker.js",
-      "bytes": 29848,
-      "sha256": "1091ec80a15b5a670e952b9e0366584a41ddbccc4783a0f117377a72a3a5c50d"
+      "name": "net.js",
+      "bytes": 9376,
+      "sha256": "39acad85f4100fff7a4812c0632941f6a54861f4d04cfe3fb21a199254b91e3a"
+    },
+    {
+      "name": "net_layout.js",
+      "bytes": 4257,
+      "sha256": "392fea8e816630a20da068c8a5001bab4d2c101ddb8a537f12eeb01377578fc0"
     },
     {
       "name": "settings.js",
-      "bytes": 7902,
-      "sha256": "7e2d89f8e318b7ec7a1e8ccf2d666ac55546ca9a24e7cf68a2ccc3e28e645d9f"
-    },
-    {
-      "name": "graphics_common.js",
-      "bytes": 4750,
-      "sha256": "cc314268acca72bab4e08abc7c3c17126868bc07cfeed7c679e7b3b365b94bdb"
-    },
-    {
-      "name": "graphics.js",
-      "bytes": 5733,
-      "sha256": "1152bf99d12b4e648689ee6f3ff89443e58eca687c897a9a4f8a4c5466d33aff"
-    },
-    {
-      "name": "vu.js",
-      "bytes": 3886,
-      "sha256": "ee9774f3a723edcf4479527b677f8ae9223419b1e97f3209f505fd5cac31bad4"
-    },
-    {
-      "name": "vfs.js",
-      "bytes": 3283,
-      "sha256": "4e36a819b76d147c549aab0f8ef44af23a93bb44b33e235420f76da5079a858e"
+      "bytes": 7951,
+      "sha256": "5347bdaf2a32310ebbe8ec2cdf1f4d4cdfda90af31e7f589ab9a3607ca847226"
     },
     {
       "name": "thunks.js",
-      "bytes": 1749,
-      "sha256": "7483d612b5a5b8a396237c2f0eeae3586ac195ec681b03d2d7baebf925bd1fb6"
+      "bytes": 1726,
+      "sha256": "c6144aec29b1f68ddc020e19c253330af2ffc43539305a0340e701588656f1be"
     },
     {
-      "name": "audio.js",
-      "bytes": 932,
-      "sha256": "9723ce44d6eb765c1a6ad7bf6197c6ebdaa8a26cb6b28745a6221573644496a0"
+      "name": "vfs.js",
+      "bytes": 3229,
+      "sha256": "46191b6194633201bb99a48498a9d9eb76d6fa2e305b426831861c4ff476e4f8"
     },
     {
-      "name": "build/imports.json",
-      "bytes": 12716,
-      "sha256": "c6011c7b1caabce233532e53ebbb177ff230982f09717ec7c99651edaee24678"
+      "name": "vu.js",
+      "bytes": 3829,
+      "sha256": "ab016b3507855a240dc4076a02fbdafaf8194ff58b5f72237ac7ee3169ba1446"
     },
     {
-      "name": "build/dhd_settings.wasm",
-      "bytes": 47233,
-      "sha256": "9746bd554ec4769eb37aada09e1d62c120441d294e8e58f8a9d157dbab0b02bc"
-    },
-    {
-      "name": "build/dhd_core.wasm",
-      "bytes": 13779580,
-      "sha256": "f9744ec01b773e9eed23580d1ce9656867a79540ad20941e499f5b73aababbb5"
-    },
-    {
-      "name": "build/graphics.wasm",
-      "bytes": 151150,
-      "sha256": "35b694d8b90f151167c78c3ac578155b5d7438cbab432eb11371cfdcaaae6e7b"
-    },
-    {
-      "name": "build/gqueue.wasm",
-      "bytes": 5508,
-      "sha256": "31f843d0426ddc856ce9ca2cf5247b7148365cbc67b51d1189a611f5e17784b2"
-    },
-    {
-      "name": "build/vu.wasm",
-      "bytes": 5762889,
-      "sha256": "d996901663a68f60b92fb4d52dc9a34af09b1bc2db93f5245eb2709ffb37951c"
-    },
-    {
-      "name": "build/renderer/dhd_render.js",
-      "bytes": 72593,
-      "sha256": "8febd88c19bd57e6d42f394f8384dc19fe9af970befe51c911424cf1775907ac"
-    },
-    {
-      "name": "build/renderer/dhd_render_bg.wasm",
-      "bytes": 389989,
-      "sha256": "3242db6787defb08a3a312a1d0291e4074eaa3aa45ab51cad35f66df618fdb9f"
+      "name": "worker.js",
+      "bytes": 29551,
+      "sha256": "3c5da2f8ba7c3885f91a71f9dfcad8507251a91093d2981b92c5f6674597ede6"
     }
   ]
 }

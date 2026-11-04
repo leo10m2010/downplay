@@ -13,7 +13,7 @@ def location(current,legacy):
 ASSETS=location('private/game-data','out/local-game-usa')
 RUNTIME=location('private/runtime','out/research/revived-runtime')
 NETWORK=location('build/network/public','out/research/browser-network/public')
-UPSTREAM=location('vendor/revived','out/research/downhill-revived')
+UPSTREAM=location('vendor/revived-079','vendor/revived')
 LAYOUT_MOVES={
     'out/local-game-usa':'private/game-data',
     'out/research/revived-runtime':'private/runtime',

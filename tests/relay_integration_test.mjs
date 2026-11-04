@@ -4,15 +4,15 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import create from '../build/network/public/network-core.js';
 import {transportText} from '../web-native/network-policy.js';
-const base=process.env.DHD_TEST_RELAY||'wss://downhill-web-relay.dowh.workers.dev';
-const identity=await (await fetch('http://127.0.0.1:8109/game-identity.json')).json();
+const base=process.env.DHD_TEST_RELAY||'wss://downhill-web-relay.dowh.workers.dev/v2';
+const identity=await (await fetch((process.env.DHD_TEST_ORIGIN||'http://127.0.0.1:8096')+'/game-identity.json')).json();
 const wasmBinary=await readFile(new URL('../build/network/public/network-core.wasm',import.meta.url)),clients=[];
 const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 async function wait(check,description){const until=Date.now()+20000;while(!check()){if(Date.now()>until)throw Error('Timeout: '+description);await pause(50);}}
 async function client(name,path){
  const net=await create({wasmBinary}),ws=new WebSocket(base+path),messages=[];ws.binaryType='arraybuffer';
  const string=(value,fn)=>{const data=new TextEncoder().encode(value+'\0'),p=net._malloc(data.length);try{net.HEAPU8.set(data,p);return fn(p);}finally{net._free(p);}};
- string(name,n=>string('0.7.2',v=>string(identity.filesSha256,h=>net._wn_init(n,v,h))));
+ string(name,n=>string('0.7.9',v=>string(identity.filesSha256,h=>net._wn_init(n,v,h))));
  net.onSend=(binary,bytes)=>{if(ws.readyState===WebSocket.OPEN)ws.send(binary?bytes:transportText(new TextDecoder().decode(bytes),true));};
  ws.onopen=()=>net._wn_open();ws.onmessage=event=>{const data=typeof event.data==='string'?new TextEncoder().encode(event.data):new Uint8Array(event.data);if(typeof event.data==='string')messages.push(JSON.parse(event.data));net.HEAPU8.set(data,net._wn_buffer());net._wn_message(typeof event.data==='string'?0:1,data.length);};
  ws.onclose=event=>string(event.reason,p=>net._wn_closed(event.code,p));

@@ -1,8 +1,8 @@
 {
-  "appVersion": "1.0.0-rc.1",
-  "coreRevision": "244cf4cef10da5492ca878e3b97ec74656dbc5e5",
-  "coreVersion": "0.7.2",
+  "appVersion": "1.0.0-rc.2",
+  "coreRevision": "7cd9543f3144bd03beb27f20bbd4e0739c453128",
+  "coreVersion": "0.7.9",
   "coreSourceBuildReproduced": false,
-  "protocol": 1,
+  "protocol": 2,
   "resourceSchema": 1
 }

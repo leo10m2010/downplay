@@ -18,6 +18,9 @@ sin volver a empaquetar el proyecto ni sustituir el motor.
 - Arranque: `python3 tools/run_linux_host.py --config host.json`.
 - Dominio previsto: `jugar.cobbleverse.space`. Worker existente:
   `wss://downhill-web-relay.dowh.workers.dev`. No desplegar otro Worker por defecto.
+- Núcleo 0.7.9/protocolo 2: el cliente añade `/v2` a las rutas del Worker.
+  Conservar las rutas y clases del protocolo 1 para instalaciones anteriores.
+  No añadir `/v2` a `host.json`: el adaptador ya lo añade.
 - DNS/Access/túnel y reinicio del Linux físico siguen pendientes de comprobación.
   No declarar que el dominio funciona solo por tener archivos de configuración.
 - Mantener el repositorio privado y los secretos fuera de Git. No escribir tokens

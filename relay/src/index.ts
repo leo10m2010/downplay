@@ -1,3 +1,6 @@
+import protocol2 from "./v2/index";
+export {Room as RoomV2} from "./v2/room";
+export {LobbyIndex as LobbyIndexV2} from "./v2/lobbies";
 // Worker entry: routes lobby-list requests to the LobbyIndex and WebSockets to a Room by code.
 import { PROTOCOL, minVersionOf, randomCode } from "./protocol";
 
@@ -13,6 +16,11 @@ function json(body: unknown, status = 200): Response {
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const path = new URL(request.url).pathname.replace(/\/+$/, "");
+    if(path.startsWith('/v2/')){
+      const url=new URL(request.url);url.pathname=url.pathname.slice(3);
+      return protocol2.fetch(new Request(url,request),{...env,ROOM:env.ROOM_V2,LOBBIES:env.LOBBIES_V2,MIN_VERSION:'0.7.9'});
+    }
+
 
     // minVersion: the oldest client release the server lets play (MIN_VERSION, wrangler.jsonc).
     const minVersion = minVersionOf(env.MIN_VERSION);

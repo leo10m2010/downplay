@@ -20,6 +20,7 @@
 // its graphics threads (a graphics wait, or a call that returns GS state). The VU worker runs that
 // queue and passes the GS's part on to the GS worker. Each vsync queues the picture; graphics.js
 // shows it and leaves its numbers for the status line here.
+import { createNet } from './net.js';
 import { createVfs } from './vfs.js';
 import { thunks } from './thunks.js';
 import { createSettings, BROWSER_PC_SETTINGS, RENDERER_LIVE } from './settings.js';
@@ -98,8 +99,9 @@ async function start(m) {
   // renderer's picture instead (checks).
   // DHD_GRAPHICS_ORDERED (threaded; port/hle/hle.h): the core skips the waits that only order queued
   // graphics work, which the workers run in order anyway; ?env.DHD_GRAPHICS_ORDERED= keeps them.
-  // DHD_FPS_WALL=1 (port/hle/kernel.c): above 60 the game's step follows real time, as on x64, so a
-  // PC that can't keep 144 runs fewer, longer updates at the game's own speed, not slow motion;
+  // DHD_FPS_WALL=1 (port/hle/kernel.c): at every rate the game's step follows real time (at most two
+  // fields), as on x64, so a PC that can't keep up runs fewer, longer updates at the game's own
+  // speed down to 30 a second, not slow motion (finding 139);
   // host_wall_seconds is then the real clock (performance.now). ?env.DHD_FPS_WALL= turns it off
   // (the virtual clock, field / 60, as run_headless.mjs's deterministic runs keep).
   const env = { DHD_ISO: '/disc.iso', DHD_HEADLESS: '1', DHD_FRAME_CLOCK: '1', DHD_FPS_WALL: '1', DHD_SKIP_MOVIES: '1',
@@ -138,8 +140,8 @@ async function start(m) {
   // vsync): 1/59.94 s, or 1/DHD_FPS above 60 (PC SETTINGS > Frame Rate; Monitor is the display's
   // refresh, which the page measured: m.displayHz). Every field yields to the event loop so the
   // canvas shows the picture (OffscreenCanvas commits when the worker's task ends). The core runs
-  // on its frame clock here; at 60 a PC that can't keep up runs the game slower, above 60 the
-  // update's step grows with real time (DHD_FPS_WALL), as on x64.
+  // on its frame clock here; a PC that can't keep up gets longer steps that follow real time
+  // (DHD_FPS_WALL), as on x64.
   const channel = new MessageChannel(); let wake = null; channel.port1.onmessage = () => { const w = wake; wake = null; w?.(); };
   const yieldTask = () => new Promise(r => { wake = r; channel.port2.postMessage(0); });
   let period = 1000 / 59.94, due = performance.now(), shown = 0, lastReport = performance.now(), lastField = 0;
@@ -260,7 +262,7 @@ async function start(m) {
     host_service_host_setting_save: (k, v) => settings.save(str(k), str(v)),
     host_service_movie_update: () => 0, host_service_movie_playing: () => 0,
     host_service_host_poll_dump: () => 0,
-    host_service_graphics_threaded: () => 1, host_service_texpack_available: () => 0,
+    host_service_graphics_threaded: () => 1, host_service_texpack_available: () => 0, host_service_gs_scale: () => 0,
     host_pacing_period: () => 1 / 60,
     host_pacing_config: p => { period = p * 1000; },
     host_sound_write: (a, frames) => {
@@ -302,6 +304,7 @@ async function start(m) {
       if (due > now + 1) await new Promise(r => setTimeout(r, due - now)); else await yieldTask();
     }),
   };
+  Object.assign(impl, createNet({span, str}));
   const noops = `host_sleep_ms host_wait_wall host_dpi_aware host_callbacks_drain host_frame_registers host_frame_video host_capture_name
 host_pacing_wait host_pacing_handoff host_pacing_input host_callback_heartbeat
 host_sound_open host_sound_reset host_sound_tick host_sound_log_stack snd_host_bench
@@ -309,10 +312,10 @@ host_service_host_init host_service_host_console_init host_service_host_settings
 host_service_movie_prepare host_service_movie_start host_service_movie_audio host_service_graphics_wait host_service_graphics_shutdown
 host_service_gs_pump_messages host_service_gs_window_title host_service_gs_native_view
 host_service_gs_window_apply host_service_gs_present_options_apply host_service_gs_window_close
-host_service_text_input_begin host_service_text_input_end host_service_host_backtrace host_service_presence
+host_service_text_input_begin host_service_text_input_end host_service_host_backtrace host_service_presence host_service_touch_field
 host_service_net_get_lobby host_service_clipboard_set`.split(/\s+/);
   for (const n of noops) impl[n] ??= () => {};
-  for (const n of ['host_service_net_racing', 'host_service_net_seconds', 'host_service_net_server_ms', 'host_heartbeat_eip', 'host_service_launcher_open']) impl[n] = () => 0;
+  for (const n of ['host_heartbeat_eip', 'host_service_launcher_open']) impl[n] = () => 0;
 
   const graphicsExports = new Set(WebAssembly.Module.exports(graphicsModule).map(e => e.name));
   const linkedExports = threaded ? new Set(WebAssembly.Module.exports(queueModule).map(e => e.name)) : graphicsExports;

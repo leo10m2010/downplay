@@ -32,6 +32,11 @@ EMSCRIPTEN_KEEPALIVE void wn_room(int track,int laps,int pub,int max,long long s
 EMSCRIPTEN_KEEPALIVE void wn_pick(int member,int rider,int bike){client_pick(&client,member,rider,bike);}
 EMSCRIPTEN_KEEPALIVE void wn_ready(int ready){client_ready(&client,ready);}
 EMSCRIPTEN_KEEPALIVE void wn_start(void){client_start(&client);}
+EMSCRIPTEN_KEEPALIVE void wn_finish(unsigned ticks,int place){client_finish(&client,ticks,place);}
+EMSCRIPTEN_KEEPALIVE void wn_back(void){client_back(&client);}
+EMSCRIPTEN_KEEPALIVE void wn_rules(int finish_window,int next,int then){client_rules(&client,finish_window,next,then);}
+EMSCRIPTEN_KEEPALIVE void wn_rotation(int count){if(count>=0&&count<=64)client_rotation(&client,buffer,count);}
+EMSCRIPTEN_KEEPALIVE void wn_end(void){client_end(&client);}
 EMSCRIPTEN_KEEPALIVE void wn_leave(void){client_leave(&client);}
 EMSCRIPTEN_KEEPALIVE int wn_racing(void){return client.racing;}
 EMSCRIPTEN_KEEPALIVE double wn_seconds(void){return net_now_ms()/1000;}

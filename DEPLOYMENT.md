@@ -29,6 +29,23 @@ configurado en `host.json` para las salas. El dominio del juego no tiene que
 apuntar a ese Worker. El manual `docs/INSTALAR_EN_OTRO_EQUIPO.md`, sección 4,
 muestra ambas rutas y explica qué falta activar.
 
+El núcleo 0.7.9 usa protocolo 2 en `/v2/v1/health` y `/v2/v1/rooms/...`.
+Conserva el valor de `relay` sin sufijos: el cliente añade `/v2` automáticamente.
+El mismo Worker conserva `/v1/...` con protocolo 1 para instalaciones anteriores.
+Las versiones distintas usan salas separadas; todos los participantes deben
+actualizar y volver a crear la sala. Para mantener este servidor de salas:
+
+```sh
+python3 tools/package_online_server.py
+cd relay
+npm ci
+npm run typecheck
+npm run deploy
+```
+
+El validador conserva las fuentes adaptadas y las migraciones de ambos protocolos.
+No sustituirlas por una copia directa de las fuentes upstream.
+
 La sesión de Wrangler disponible durante la preparación permitió consultar la
 zona, pero rechazó DNS con HTTP 403. Por ello, DNS/Access no deben considerarse
 activados por haber generado estos archivos.

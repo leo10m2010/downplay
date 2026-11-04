@@ -17,7 +17,7 @@ export async function createBrowserNetwork({env,span,str,say}) {
   if(!base){say('Online: configura DHD_NET_SERVER para tu servidor.');return -1;}
   if(!rejoin){close();initialize();retries=0;}
   stopping=false;const own=++generation;
-  socket=new WebSocket(base+path);socket.binaryType='arraybuffer';const current=socket;
+  socket=new WebSocket(base+'/v2'+path);socket.binaryType='arraybuffer';const current=socket;
   current.onopen=()=>{if(own===generation)net._wn_open();};
   current.onmessage=event=>{
    if(own!==generation)return;
@@ -48,6 +48,12 @@ export async function createBrowserNetwork({env,span,str,say}) {
  // original sorted-path/length/content-hash algorithm. No ISO is needed here.
  let digestJob=0;
  const services={
+  host_service_net_offered:()=>1,
+  host_service_net_finish:(ticks,place)=>net._wn_finish(ticks,place),
+  host_service_net_back:()=>net._wn_back(),
+  host_service_net_rules:(finish_window,next,then)=>net._wn_rules(finish_window,next,then),
+  host_service_net_rotation:(a,count)=>{if(count>=0&&count<=64){net.HEAPU8.set(span(a,count),buf());net._wn_rotation(count);}},
+  host_service_net_end_race:()=>net._wn_end(),
   host_service_net_init:(a,b,c,d)=>{
    const url=env.DHD_NET_SERVER||'';
    if(url){const u=new URL(url);if(!['ws:','wss:'].includes(u.protocol)||u.username||u.password||u.search||u.hash)throw Error('Dirección WebSocket inválida');base=u.origin;}

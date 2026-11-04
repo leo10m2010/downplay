@@ -1,6 +1,6 @@
 # Downhill Web — versión privada
 
-Versión web basada en Downhill Revived 0.7.2, con interfaz, controles, guardados,
+Versión web basada en Downhill Revived 0.7.9, con interfaz, controles, guardados,
 lectura progresiva y servidor de recursos propios. El juego se ejecuta en el
 navegador del jugador. El PC Linux sirve archivos; el Worker de Cloudflare conecta
 las salas. El código y las evaluaciones antiguas se archivan fuera del proyecto.
@@ -94,7 +94,7 @@ conservadas están fuera del proyecto, en `downhill-archive`.
 ## Desarrollo y límites reales
 
 Para preparar recursos se utiliza Python offline con `tools/requirements.txt`.
-La fuente de referencia está fijada a `244cf4cef10da5492ca878e3b97ec74656dbc5e5`.
+La fuente de referencia está fijada a `7cd9543f3144bd03beb27f20bbd4e0739c453128`.
 `tools/build_browser_network.py` compila el cliente C original con Emscripten.
 La compilación integral del núcleo del juego todavía no está reproducida aquí:
 se usan módulos oficiales con manifiesto y comprobación de hashes. No se deben

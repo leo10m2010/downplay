@@ -8,7 +8,7 @@ const emitted=[];net.onSend=(binary,bytes)=>emitted.push({binary,bytes});
 const string=(value,fn)=>{const bytes=new TextEncoder().encode(value+'\0'),p=net._malloc(bytes.length);try{net.HEAPU8.set(bytes,p);return fn(p);}finally{net._free(p);}};
 string('Test "rider"',n=>string('test-browser-build',v=>string('a'.repeat(64),h=>net._wn_init(n,v,h))));
 net._wn_open();const hello=JSON.parse(new TextDecoder().decode(emitted.at(-1).bytes));
-assert.equal(hello.type,'hello');assert.equal(hello.name,'Test "rider"');assert.equal(hello.protocol,1);assert.equal(hello.isoSha256,'a'.repeat(64));
+assert.equal(hello.type,'hello');assert.equal(hello.name,'Test "rider"');assert.equal(hello.protocol,2);assert.equal(hello.isoSha256,'a'.repeat(64));
 const receive=(binary,data)=>{const b=typeof data==='string'?new TextEncoder().encode(data):data;net.HEAPU8.set(b,net._wn_buffer());net._wn_message(binary,b.length);};
 receive(0,JSON.stringify({type:'welcome',code:'ABC234',memberId:7,host:false,serverTime:Date.now()}));
 let at=net._wn_lobby();assert.equal(new TextDecoder().decode(net.HEAPU8.subarray(at+8,at+14)),'ABC234');

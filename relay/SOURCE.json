@@ -3,5 +3,11 @@
   "revision": "244cf4cef10da5492ca878e3b97ec74656dbc5e5",
   "license": "GPL-3.0-or-later",
   "changes": "workers.dev deployment; official domain and analytics binding removed; optional analytics type declaration; pinned deploy-only tool dependencies. Runtime server TypeScript unchanged.",
-  "gameDataIncluded": false
+  "gameDataIncluded": false,
+  "protocol2": {
+    "revision": "7cd9543f3144bd03beb27f20bbd4e0739c453128",
+    "source": "online/server/src",
+    "routePrefix": "/v2",
+    "changes": "Local Env type alias; optional analytics remains unbound; separate SQLite classes keep protocol 1 state. external-player-barrier feature preserves the web host core's chosen 2/3/4-player start barrier while retaining session finish/back messages."
+  }
 }

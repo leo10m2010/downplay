@@ -15,6 +15,14 @@
       {
         "name": "LOBBIES",
         "class_name": "LobbyIndex"
+      },
+      {
+        "name": "ROOM_V2",
+        "class_name": "RoomV2"
+      },
+      {
+        "name": "LOBBIES_V2",
+        "class_name": "LobbyIndexV2"
       }
     ]
   },
@@ -24,6 +32,13 @@
       "new_sqlite_classes": [
         "Room",
         "LobbyIndex"
+      ]
+    },
+    {
+      "tag": "protocol-2",
+      "new_sqlite_classes": [
+        "RoomV2",
+        "LobbyIndexV2"
       ]
     }
   ]

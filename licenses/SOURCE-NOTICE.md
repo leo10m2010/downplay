@@ -2,7 +2,9 @@
 
 Downhill Revived: skuza-oss y los contribuidores de
 https://github.com/skuza-oss/downhill-revived, revisión
-244cf4cef10da5492ca878e3b97ec74656dbc5e5, GPL-3.0-or-later según el proyecto.
+7cd9543f3144bd03beb27f20bbd4e0739c453128 (0.7.9), GPL-3.0-or-later según el proyecto.
+El Worker conserva además el servidor de protocolo 1 de la revisión
+244cf4cef10da5492ca878e3b97ec74656dbc5e5 (0.7.2), identificado en relay/SOURCE.json.
 Se conservan la licencia y el manifiesto de los módulos usados en la evaluación.
 El módulo de red utiliza las fuentes upstream originales y un adaptador propio.
 
