@@ -50,6 +50,12 @@ navegación hasta carrera sin autopad, pausa, lectura de ejes, cierre del panel 
 controles y desconexión. No se probaron mandos físicos; los dispositivos sin
 asignación estándar muestran un aviso en lugar de asumir botones o ejes.
 
+Diagnóstico móvil: el registro funciona también cuando falla la comprobación
+WebGPU antes de importar el juego. Los errores largos conservan su causa al
+final del texto. Confirmado con error Metal inyectado y cero descargas del núcleo;
+el arranque normal sigue funcionando en Chrome. iOS 27.0.1 en hardware físico
+sigue pendiente; investigación y fuentes en `docs/TESTING.md`.
+
 ## Registro de la entrega anterior (rc.1, 3 de noviembre)
 
 Aplicación 1.0.0-rc.1; núcleo Revived 0.7.2, protocolo 1, revisión

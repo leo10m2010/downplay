@@ -15,7 +15,7 @@ export const ATOMIC_PROBE=`
 export function graphicsFailureMessage(error){
  const text=String(error?.message||error||'Error gráfico desconocido');
  if(/field may not be qualified with an address space|__atomic_compare_exchange_result<thread/is.test(text))
-  return 'El navegador tiene un fallo al compilar una operación gráfica necesaria (WebGPU/Metal). En iPhone, actualiza iOS y vuelve a probar. Si persiste, esa versión todavía no es compatible con el renderizador del juego.';
+  return 'El navegador tiene un fallo al compilar una operación gráfica necesaria (WebGPU/Metal). En iPhone, actualiza iOS desde Ajustes → General → Actualización de software y vuelve a probar. Cambiar entre Safari y Chrome puede conservar el mismo fallo. Si persiste, esa versión del sistema todavía no es compatible con el renderizador. El detalle está en Abrir registro.';
  return 'No se pudo preparar WebGPU para el juego. '+text.slice(0,500);
 }
 export async function probeAtomicShader(adapter,signal){
@@ -33,5 +33,6 @@ export async function probeAtomicShader(adapter,signal){
 // WebKit stacks can omit the message entirely. Preserve it when crossing workers.
 export function formatRuntimeError(error){
  const message=String(error?.message||error||'Error desconocido'),stack=String(error?.stack||'');
- return (stack.includes(message)?stack:message+(stack?'\n'+stack:'')).slice(0,32768);
+ const text=stack.includes(message)?stack:message+(stack?'\n'+stack:'');
+ return text.length<=32768?text:text.slice(0,4096)+'\n[… registro abreviado …]\n'+text.slice(-28600);
 }

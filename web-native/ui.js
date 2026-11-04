@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import {installSaveUI} from './save-ui.js';
 const $=id=>document.getElementById(id),panel=$('controls');
+// Available even when compatibility checks prevent importing the game page.
+$('logButton').onclick=()=>{$('logPanel').hidden=!$('logPanel').hidden;};
 $('retryButton').onclick=()=>location.reload();
 installSaveUI();
 addEventListener('error',event=>{if(!document.body.dataset.preview&&!window.nativeSessionStopped)$('status').textContent='ERROR: '+(event.message||'No se pudo iniciar o continuar el motor.');});

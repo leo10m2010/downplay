@@ -6,7 +6,7 @@ try{
  const {acquireGameLease}=await import('./runtime-session.js');
  copy.textContent='Comprobando navegador y aceleración gráfica…';
  const check=await checkCompatibility();window.nativeCompatibility=check;
- if(!check.ok)throw Error(check.errors.join(' '));
+ if(!check.ok){document.getElementById('log').textContent=['Comprobación del navegador:',...check.errors,check.graphicsError].filter(Boolean).join('\n');throw Error(check.errors.join(' '));}
  const response=await fetch('release.json',{cache:'no-store'});if(!response.ok)throw Error('Actualiza también el servidor de esta versión.');
  const release=await response.json();if(release.appVersion!=='1.0.0-rc.2'||release.protocol!==2)throw Error('La página y el servidor tienen versiones distintas. Recarga la página o completa la actualización.');window.nativeRelease=release;
  document.getElementById('compatibility-message').textContent=check.warnings.join(' ');

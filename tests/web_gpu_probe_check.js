@@ -15,6 +15,8 @@ async(page)=>{
     await tab.waitForFunction(()=>window.nativeCompatibility?.ok===false,null,{timeout:20000});
     const copy=await tab.locator('#loading-copy').textContent();
     if(!copy.includes('actualiza iOS')||coreDownloads!==0||await tab.evaluate(()=>Boolean(window.gameWorker)))throw Error('Metal failure was not handled before engine loading');
+    await tab.locator('.diagnostics summary').click();await tab.locator('#logButton').click();
+    if(!await tab.locator('#logPanel').isVisible()||!(await tab.locator('#log').textContent()).includes('field may not be qualified with an address space'))throw Error('Preflight hid the compiler diagnostic');
     results.push({injectedCompilerError:true,coreDownloads,message:copy});
    }else{
     await tab.waitForFunction(()=>window.dhdStatus?.field>30,null,{timeout:60000});

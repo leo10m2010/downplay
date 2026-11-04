@@ -107,6 +107,35 @@ y el arranque real. En otro contexto inyecta el error Metal comunicado por el
 iPhone: la página debe explicarlo antes de descargar `dhd_core.wasm` o crear el
 trabajador del juego. La prueba no acredita una corrección del compilador de iOS.
 
+Investigación del fallo Metal (4/11/2026): usuario con iPhone 15 Pro Max,
+iOS 27.0.1, mismo resultado en Safari y Chrome. El diagnóstico coincide con
+el helper de WebKit anterior a `4f56cc248e8a2e447f77d54d7612d2a6128daccb`:
+su retorno deducía el tipo con `decltype(compare)`, incluyendo un calificador
+de espacio de direcciones inválido para un campo. El cambio del 13/9/2026 usa
+el parámetro de tipo `S`. Comparación comprobada con los archivos de esa revisión
+y su padre mediante la API oficial; no prueba qué compilación trae un iPhone.
+[Cambio original](https://github.com/WebKit/WebKit/commit/4f56cc248e8a2e447f77d54d7612d2a6128daccb).
+
+Apple lista iOS 27.2, publicado el 26/10/2026 y compatible con iPhone 11 y
+posteriores. Probar la actualización estable desde Ajustes → General →
+Actualización de software y repetir la comprobación. No está verificada aquí
+la inclusión del parche en esa distribución ni el juego en un iPhone físico.
+[Versiones oficiales](https://support.apple.com/en-us/100100).
+
+Otros motores, como Three.js, mantienen una ruta WebGL 2 de respaldo. El
+renderizador de este juego solicita explícitamente WebGPU y sus pipelines de
+rasterizado usan compute y CAS sobre píxeles empaquetados. WebGL 2 no ofrece
+compute; cambiar una opción no crea ese respaldo. Reemplazar CAS por una escritura
+simple perdería la protección de palabras compartidas. Se conserva el algoritmo
+correcto y el bloqueo previo al arranque cuando falla la operación requerida.
+[Three.js](https://threejs.org/docs/pages/WebGPURenderer.html),
+[límites de wgpu](https://docs.rs/wgpu/latest/wgpu/struct.DownlevelFlags.html#associatedconstant.COMPUTE_SHADERS).
+
+El registro se puede abrir aunque falle el preflight, y conserva el principio y
+el final del mensaje del compilador dentro de 32 KiB. La prueba inyectada verificó
+que se ve el error y no se descarga el núcleo. Esto mejora el diagnóstico;
+no corrige el compilador Metal del dispositivo.
+
 Varias instancias en un mismo PC sirven para comprobar integración y carga, pero
 no acreditan una partida entre equipos y conexiones diferentes. El rendimiento
 medido con varias instancias simultáneas no representa el rendimiento de un
