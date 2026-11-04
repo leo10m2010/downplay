@@ -17,6 +17,9 @@ No se abre ni se solicita una ISO durante la partida.
 La página comprueba WebGPU, JSPI, memoria compartida y aislamiento antes de cargar
 el núcleo. Los controles originales están dentro del juego. «Teclado y mando»
 permite reasignar teclas; los mandos estándar se conectan por USB/Bluetooth al PC.
+El stick izquierdo navega por los menús y conserva dirección e inclinación
+analógicas durante la carrera. Si el navegador no reconoce la asignación del
+mando, la página lo indica en lugar de ignorarlo silenciosamente.
 
 ### Teléfonos (compatibilidad experimental)
 

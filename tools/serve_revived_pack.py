@@ -62,8 +62,8 @@ window.nativeKeyboardDiagnostics=()=>Array.from(keys);
     source=source.replace("else if (m.type === 'log') addLog(m.text);", "else if(m.type==='load-progress') {window.nativeLoadProgress??={};window.nativeLoadProgress[m.url]=m;}\n    else if (m.type === 'log') addLog(m.text);")
     source=source.replace("window.nativeNetworkDiagnostics=m;", "window.nativeNetworkDiagnostics=m;dispatchEvent(new Event('network-update'));")
     start=source.index('// Standard-mapping gamepads');end=source.index('// The mouse and touch',start)
-    source=source[:start]+'''const pollGamepads=createGamepadInput(pads,names=>{
- const info=document.getElementById('gamepad-status');if(info)info.textContent=names.some(Boolean)?names.map((n,i)=>n?'Jugador '+(i+1)+': '+n:'').filter(Boolean).join(' · '):'Mando: conecta USB/Bluetooth y pulsa un botón';
+    source=source[:start]+'''const pollGamepads=createGamepadInput(pads,(names,unsupported)=>{
+ const info=document.getElementById('gamepad-status');if(info)info.textContent=(names.some(Boolean)?names.map((n,i)=>n?'Jugador '+(i+1)+': '+n:'').filter(Boolean).join(' · '):unsupported.length?'':'Mando: conecta USB/Bluetooth y pulsa un botón')+(unsupported.length?' '+unsupported.join(', ')+': el navegador no reconoce su asignación. Activa el modo XInput si el mando lo permite.':'');
 });
 window.nativeGamepadDiagnostics=()=>Array.from(pads);
 function pollPads(){pollGamepads(navigator.getGamepads?.(),document.hasFocus()&&!document.hidden&&document.getElementById('controls').hidden&&document.getElementById('logPanel').hidden&&!['INPUT','TEXTAREA'].includes(document.activeElement?.tagName));cursor();requestAnimationFrame(pollPads);}
@@ -88,7 +88,14 @@ def adapt_worker(source):
     source=source.replace('\r\n','\n')
     source=adapt_error_messages(source)
     source=source.replace('...BROWSER_PC_SETTINGS, ...(m.env || {})', "...BROWSER_PC_SETTINGS,DHD_FPS_MAX:'60',...(m.env||{})")
-    source="import {createBrowserNetwork} from './network.js';\nimport {createAutoQuality} from './quality.js';\nimport {fetchWithProgress} from './load-progress.js';\nimport {writePcm} from './audio-ring.js';\n"+source
+    source="import {menuStickButtons} from './gamepads.js';\nimport {createBrowserNetwork} from './network.js';\nimport {createAutoQuality} from './quality.js';\nimport {fetchWithProgress} from './load-progress.js';\nimport {writePcm} from './audio-ring.js';\n"+source
+    pad_start='  function pad(port, out) {'
+    pad_buttons='    o[0] = buttons & 255; o[1] = buttons >> 8;'
+    if source.count(pad_start)!=1 or source.count(pad_buttons)!=1:raise ValueError('Unsupported controller insertion point')
+    source=source.replace(pad_start,'  const menuSticks=new Uint16Array(4);\n'+pad_start)
+    source=source.replace(pad_buttons,'''    menuSticks[port]=dv.getInt32(0x0829E290,true)?0:menuStickButtons(o[4],o[5],menuSticks[port]);
+    buttons|=menuSticks[port];
+'''+pad_buttons)
     start=source.index('    host_sound_write:');end=source.index('    // The VBLANK',start)
     source=source[:start]+'''    host_sound_write:(a,frames)=>{soundFrames+=frames;writePcm(ring,span(a,frames*4));},
 '''+source[end:]

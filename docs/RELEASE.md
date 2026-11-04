@@ -42,6 +42,14 @@ inicio con tres puestos, rechazo por sala llena y salida del anfitrión.
 El cambio en Linux requiere `git pull --ff-only`, reiniciar `downhill-web` y
 recargar el navegador. No requiere transferir otra vez los recursos del juego.
 
+Corrección posterior de mando: stick izquierdo como cruceta únicamente cuando
+el núcleo está en modo menú, con umbrales separados de pulsación/liberación.
+En carrera se conservan los cuatro ejes y su recorrido completo 0–255.
+Comprobado en Chrome con entradas Gamepad API controladas y el núcleo real:
+navegación hasta carrera sin autopad, pausa, lectura de ejes, cierre del panel de
+controles y desconexión. No se probaron mandos físicos; los dispositivos sin
+asignación estándar muestran un aviso en lugar de asumir botones o ejes.
+
 ## Registro de la entrega anterior (rc.1, 3 de noviembre)
 
 Aplicación 1.0.0-rc.1; núcleo Revived 0.7.2, protocolo 1, revisión

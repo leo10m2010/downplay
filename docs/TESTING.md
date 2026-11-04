@@ -49,6 +49,14 @@ ajeno ni a partidas de otros usuarios.
 estados intercambiados y salida del anfitrión. Utiliza 8096 y el Worker local en
 8788, sustituyendo solo la configuración de salas en su contexto aislado.
 
+`web_gamepad_check.js` utiliza el candidato en 8096 y entradas sintéticas de la
+Gamepad API. Instrumenta únicamente las lecturas del mando en un contexto de
+prueba: verifica los bytes que recibe el núcleo, las direcciones de menú y la
+conservación de los cuatro ejes analógicos en carrera. No equivale a probar un
+DualSense, DualShock, Xbox o mando genérico físico. La asignación estándar sigue
+el [orden de ejes y botones de W3C](https://www.w3.org/TR/gamepad/#remapping);
+no se adivina la distribución de un dispositivo sin asignación reconocida.
+
 `web_audio_clock_check.js` compara 0.7.2 en 8097 y 0.7.9 en 8096 con una pausa
 inyectada de 24 ms por fotograma. Verifica la cantidad de audio producido por
 segundo real y mide cortes después de 10 segundos de calentamiento. La copia
