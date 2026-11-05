@@ -32,6 +32,7 @@ ADAPTERS['LICENSE']=ROOT/'LICENSE'
 ADAPTERS.update({name:ROOT/'web-native'/name for name in ('mobile.js','input-state.js')})
 ADAPTERS['gpu-probe.js']=ROOT/'web-native/gpu-probe.js'
 ADAPTERS['network-policy.js']=ROOT/'web-native/network-policy.js'
+ADAPTERS['text-input.js']=ROOT/'web-native/text-input.js'
 ADAPTERS.update({name:ROOT/'web-native'/name for name in ('bootstrap.js','compatibility.js','runtime-session.js','save-store.js','save-ui.js','resource-cache.js','audio.js','audio-consumer.js','frame-metrics.js')})
 ADAPTERS.update({name:NETWORK/name for name in ('network-core.js','network-core.wasm')})
 CODE_CACHE=CodeCache()
@@ -42,12 +43,13 @@ class GameHTTPServer(ThreadingHTTPServer):
 
 def adapt_main(source):
     source=source.replace('\r\n','\n')
+    source="import {installTextInput} from './text-input.js';\n"+source
     source=source.replace("import { startSettings } from './settings.js';", "import { startSettings } from './settings.js';\nimport { createGamepadInput } from './gamepads.js';")
     source="import {installNetworkLauncher} from './network-launcher.js';\ninstallNetworkLauncher().catch(console.error);\n"+source
     source="import {installKeyboard} from './keyboard.js';\nimport {createKeyInput} from './input-state.js';\nimport {installTouch,installFullscreen,mobileDefaults} from './mobile.js';\n"+source
     source="import {installLifecycle} from './lifecycle.js';\n"+source
     source=source.replace("const addLog = text => { log.textContent += text + '\\n'; log.scrollTop = log.scrollHeight; };", "const addLog = text => { log.textContent=(log.textContent+text+'\\n').slice(-65536);log.scrollTop=log.scrollHeight; };")
-    source=source.replace("const worker = new Worker('worker.js', { type: 'module' });", "const worker = new Worker('worker.js', { type: 'module' });\n  window.gameWorker=worker;")
+    source=source.replace("const worker = new Worker('worker.js', { type: 'module' });", "const worker = new Worker('worker.js', { type: 'module' });\n  window.gameWorker=worker;installTextInput(worker,canvas,mouse);")
     source=source.replace("window.dhdStatus = m; (window.dhdHistory ??= []).push([m.field, +m.fps.toFixed(2), m.draws]);", "window.dhdStatus=m;(window.dhdHistory??=[]).push([m.field,+m.fps.toFixed(2),m.draws]);if(window.dhdHistory.length>120)window.dhdHistory.shift();")
     start=source.index('// KeyboardEvent.code');end=source.index('// Standard-mapping gamepads',start)
     source=source[:start]+'''let running=false;
@@ -86,6 +88,7 @@ addEventListener('blur',()=>pollGamepads(navigator.getGamepads?.(),false));
 
 def adapt_worker(source):
     source=source.replace('\r\n','\n')
+    source="import {createTextInputServices} from './text-input.js';\n"+source
     source=adapt_error_messages(source)
     source=source.replace('...BROWSER_PC_SETTINGS, ...(m.env || {})', "...BROWSER_PC_SETTINGS,DHD_FPS_MAX:'60',...(m.env||{})")
     source="import {menuStickButtons} from './gamepads.js';\nimport {createBrowserNetwork} from './network.js';\nimport {createAutoQuality} from './quality.js';\nimport {fetchWithProgress} from './load-progress.js';\nimport {writePcm} from './audio-ring.js';\n"+source
@@ -117,7 +120,7 @@ def adapt_worker(source):
     source=source.replace("renderer: 'rust', submits: stats(3), scale: stats(4), workers: threaded ? 3 : 1 });", "renderer:'rust',submits:stats(3),scale:stats(4),workers:threaded?3:1,memoryBytes:memory.buffer.byteLength,bootMs:firstFrameMs });\n        if(env.DHD_AUTO_QUALITY!=='0'){const next=autoQuality.sample({fps:Math.min(presentFps,(field-lastField)*1000/(now-lastReport)),riding,scale:stats(4)},now);if(next!==null){setEnv('DHD_SCALE',String(next));say('Calidad automática: resolución x'+next);}}")
     anchor='  const graphicsExports = new Set('
     if source.count(anchor)!=1:raise ValueError('Unsupported network insertion point')
-    source=source.replace(anchor,"  Object.assign(impl,(await createBrowserNetwork({env,span,str,say})).services);\n"+anchor)
+    source=source.replace(anchor,"  Object.assign(impl,(await createBrowserNetwork({env,span,str,say})).services);\n  const textInput=createTextInputServices({span,str,onActive:active=>Atomics.store(mouse,14,active?1:0)});\n  Object.assign(impl,textInput.services);addEventListener('message',event=>{if(event.data?.type==='text-input')textInput.receive(event.data.codes);});\n"+anchor)
     # Resource reads suspend the original C caller through the same JSPI fibers.
     source="import {createResourceSource} from './resource-cache.js';\nimport {createFrameMetrics} from './frame-metrics.js';\n"+source
     start=source.index('function discSource(m)');end=source.index('// keyboard.c',start)

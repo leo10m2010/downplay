@@ -36,6 +36,7 @@ export function installKeyboard(keys,canvas,input=null){
  addEventListener('keydown',e=>{
   if(editing){e.preventDefault();e.stopImmediatePropagation();if(e.code==='Escape'){editing=null;message.textContent='Cambio cancelado.';draw();return;}if(e.repeat||e.ctrlKey||e.altKey||e.metaKey)return;try{bindings=rebind(bindings,editing,e.code);editing=null;save();draw();}catch(error){message.textContent=error.message;}return;}
   if(!panel.hidden||document.activeElement!==canvas||e.ctrlKey||e.altKey||e.metaKey)return;
+  if(window.nativeTextInputActive?.()&&!e.code.startsWith('Arrow'))return;
   const action=ACTIONS.find(([id])=>bindings[id].includes(e.code));if(!action)return;
   e.preventDefault();if(!pressed.has(e.code)){pressed.set(e.code,action[2]);set(action[2],true);}
  },true);

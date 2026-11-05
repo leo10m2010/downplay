@@ -56,6 +56,15 @@ final del texto. Confirmado con error Metal inyectado y cero descargas del núcl
 el arranque normal sigue funcionando en Chrome. iOS 27.0.1 en hardware físico
 sigue pendiente; investigación y fuentes en `docs/TESTING.md`.
 
+Online dentro del juego: corregido el cierre `unsupported service
+host_service_text_input_edit` al editar el nombre o el código. Se adapta el
+contrato original de entrada de texto al navegador, con cola de 256 caracteres,
+filtro ASCII, longitud del campo, borrar, confirmar y cancelar. Las teclas de
+texto no pulsan simultáneamente los botones de juego; las flechas y el mando
+conservan el selector original. Chrome con núcleo y recursos reales: abrir
+Online, editar/confirmar nombre, escribir/cancelar código y continuar 121 campos
+sin detenerse. No se acredita una carrera desde ese recorrido en esta prueba.
+
 ## Registro de la entrega anterior (rc.1, 3 de noviembre)
 
 Aplicación 1.0.0-rc.1; núcleo Revived 0.7.2, protocolo 1, revisión

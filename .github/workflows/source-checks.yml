@@ -19,6 +19,7 @@ jobs:
       - run: python tools/check_sources.py --all
       - run: python -m unittest discover -s tests -p 'test_*.py'
       - run: node tests/keyboard_bindings_test.mjs
+      - run: node tests/text_input_test.mjs
       - run: node tests/mobile_input_test.mjs
       - run: node tests/gpu_probe_test.mjs
       - run: node tests/gamepads_test.mjs

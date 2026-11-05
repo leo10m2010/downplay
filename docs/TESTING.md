@@ -12,6 +12,7 @@ preparado utiliza únicamente la biblioteca estándar de Python.
 ```sh
 python3 -m unittest discover -s tests -p 'test_*.py'
 node tests/keyboard_bindings_test.mjs
+node tests/text_input_test.mjs
 node tests/mobile_input_test.mjs
 node tests/gpu_probe_test.mjs
 node tests/gamepads_test.mjs
@@ -48,6 +49,12 @@ ajeno ni a partidas de otros usuarios.
 `web_online_matrix_check.js` comprueba 2/3/4 núcleos reales, puestos distintos,
 estados intercambiados y salida del anfitrión. Utiliza 8096 y el Worker local en
 8788, sustituyendo solo la configuración de salas en su contexto aislado.
+
+`web_ingame_online_check.js` abre ONLINE desde el menú original con el servidor
+candidato en 8096. Reproduce el camino que fallaba, edita y confirma el nombre,
+escribe un código, cancela y comprueba que el motor sigue avanzando. Instrumenta
+solo lecturas de estado para observar los menús; no reemplaza el núcleo ni envía
+el código de prueba a una sala ajena.
 
 `web_gamepad_check.js` utiliza el candidato en 8096 y entradas sintéticas de la
 Gamepad API. Instrumenta únicamente las lecturas del mando en un contexto de
